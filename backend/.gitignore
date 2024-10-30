@@ -12,3 +12,8 @@
 *.out
 
 .env
+
+.idea/
+
+backend/tmp/
+tmp/
