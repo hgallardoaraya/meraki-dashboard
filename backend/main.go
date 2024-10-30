@@ -4,17 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"net/http"
 	"os"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		return
-	}
 	TursoDatabaseDns := os.Getenv("TURSO_DATABASE_DNS")
 	TursoAuthToken := os.Getenv("TURSO_AUTH_TOKEN")
 
