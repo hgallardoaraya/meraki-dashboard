@@ -7,6 +7,7 @@ type User struct {
 	LastName       string `json:"last_name"`
 	SecondLastName string `json:"second_last_name"`
 	Rut            string `json:"rut"`
+	DV             string `json:"dv"`
 	RoleID         int    `json:"role_id"`
 	SedeID         int    `json:"sede_id"`
 }

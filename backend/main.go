@@ -17,6 +17,7 @@ func main() {
 	// Create a new group for the API
 	api := r.Group("/api")
 	{
+		routes.UserRouter(api)
 		routes.RoleRouter(api)
 	}
 

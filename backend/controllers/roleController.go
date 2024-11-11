@@ -16,7 +16,7 @@ func (e *RoleController) GetRole(c *gin.Context) {
 	db := database.Conn()
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM roles;")
+	rows, err := db.Query("SELECT * FROM rol;")
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -52,7 +52,7 @@ func (e *RoleController) GetRoleByID(c *gin.Context) {
 
 	fmt.Println(roleId)
 
-	row := db.QueryRow("SELECT * FROM roles WHERE id = ?;", roleId)
+	row := db.QueryRow("SELECT * FROM rol WHERE id = ?;", roleId)
 
 	var role m.Role
 
@@ -92,7 +92,7 @@ func (e *RoleController) CreateRole(c *gin.Context) {
 	db := database.Conn()
 	defer db.Close()
 
-	result, err := db.Exec("INSERT INTO roles (name) VALUES (?)", role.Name)
+	result, err := db.Exec("INSERT INTO rol (nombre) VALUES (?)", role.Name)
 
 	fmt.Println(result, err)
 

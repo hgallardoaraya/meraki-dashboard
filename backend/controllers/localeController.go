@@ -9,35 +9,35 @@ import (
 	m "dashboard/models"
 )
 
-type DteController struct{}
+type SedeController struct{}
 
-func (e *DteController) GetDte(c *gin.Context) {
+func (e *SedeController) GetSede(c *gin.Context) {
 	db := database.Conn()
 	defer db.Close()
-	var dtes []m.Dte
+	var sedes []m.Locale
 
-	rows, err := db.Query("SELECT * FROM dte;")
+	rows, err := db.Query("SELECT * FROM sede;")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get dte",
+			"message": "Failed to get sede",
 		})
 		return
 	}
 
 	for rows.Next() {
-		var dte m.Dte
-		err := rows.Scan(&dte.ID, &dte.Name)
+		var sede m.Locale
+		err := rows.Scan(&sede.ID, &sede.Name)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get dte",
+				"message": "Failed to get sede",
 				"error":   err,
 			})
 			return
 		}
-		dtes = append(dtes, dte)
+		sedes = append(sedes, sede)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": dtes,
+		"message": sedes,
 	})
 }
