@@ -9,9 +9,9 @@ import (
 	m "dashboard/models"
 )
 
-type dteController struct{}
+type DteController struct{}
 
-func (e *dteController) GetDte(c *gin.Context) {
+func (e *DteController) GetDte(c *gin.Context) {
 	db := database.Conn()
 	defer db.Close()
 	var dtes []m.Dte

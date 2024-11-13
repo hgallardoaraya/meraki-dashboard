@@ -3,99 +3,69 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"dashboard/database"
 	m "dashboard/models"
+	r "dashboard/repositories"
 )
 
 type RoleController struct{}
 
+var roleRepository r.RoleRepository = r.RoleRepository{}
+
 func (e *RoleController) GetRole(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM rol;")
-
+	roles, err := roleRepository.GetRole()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get role",
+			"message": "Failed to get roles",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	var roles []m.Role
-	for rows.Next() {
-		var role m.Role
-		err := rows.Scan(&role.ID, &role.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get role",
-				"error":   err,
-			})
-			return
-		}
-		roles = append(roles, role)
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"message": roles,
+		"roles": roles,
 	})
 }
 
 func (e *RoleController) GetRoleByID(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-
-	roleId := c.Param("id")
-
-	fmt.Println(roleId)
-
-	row := db.QueryRow("SELECT * FROM rol WHERE id = ?;", roleId)
-
-	var role m.Role
-
-	err := row.Scan(&role.ID, &role.Name)
-
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get role",
-			"error":   err,
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid role ID",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	if role.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "role was not found"})
+	role, err := roleRepository.GetRoleByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get role",
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": role,
+		"role": role,
 	})
 }
 
 func (e *RoleController) CreateRole(c *gin.Context) {
 	var role m.Role
-
 	err := c.BindJSON(&role)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Failed to bind JSON",
-			"error":   err,
+			"message": "Failed to create role",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	db := database.Conn()
-	defer db.Close()
-
-	result, err := db.Exec("INSERT INTO rol (nombre) VALUES (?)", role.Name)
-
-	fmt.Println(result, err)
-
+	err = roleRepository.CreateRole(role)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to create role",
@@ -105,6 +75,6 @@ func (e *RoleController) CreateRole(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Role created",
+		"message": fmt.Sprintf("Role %s created successfully", role.Name),
 	})
 }
