@@ -1,34 +1,21 @@
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import Sidebar from "./sidebar/sidebar.tsx"
 
 interface LayoutProps {
-    children: ReactNode
+    children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div>
-      <header>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Inicio</Link>
-            </li>
-            <li>
-              <Link to="/gastos">Gastos</Link>
-            </li>
-            <li>
-              <Link to="/estadisticas">Estadísticas</Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
-      <main>
+    <div className="flex">      
+    
+      <Sidebar/>
+      {/* Main Content */}
+      <main
+        className="flex-1 transition-margin duration-300 bg-gray-50 p-4"
+      >        
         {children}
       </main>
-      <footer>
-        <p>Footer Content</p>
-      </footer>
     </div>
   );
 };

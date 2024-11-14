@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
 	margin: 0;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
 }
