@@ -12,8 +12,7 @@ import (
 type DteController struct{}
 
 func (e *DteController) GetDte(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var dtes []m.Dte
 
 	rows, err := db.Query("SELECT * FROM dte;")

@@ -10,8 +10,7 @@ type BillCategoryRepository struct{}
 var tableBillCategory string = "categoria"
 
 func (e *BillCategoryRepository) GetBillCategory() ([]m.BillCategory, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var billCategories []m.BillCategory
 
 	rows, err := db.Query("SELECT * FROM " + tableBillCategory + ";")
@@ -32,11 +31,10 @@ func (e *BillCategoryRepository) GetBillCategory() ([]m.BillCategory, error) {
 }
 
 func (e *BillCategoryRepository) GetBillCategoryByID(id int) (m.BillCategory, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var billCategory m.BillCategory
 
-	err := db.QueryRow("SELECT * FROM "+tableBillCategory+" WHERE id = $1;", id).Scan(&billCategory.ID, &billCategory.Name)
+	err := db.QueryRow("SELECT * FROM "+tableBillCategory+" WHERE id = ?;", id).Scan(&billCategory.ID, &billCategory.Name)
 	if err != nil {
 		return m.BillCategory{}, err
 	}
@@ -46,10 +44,9 @@ func (e *BillCategoryRepository) GetBillCategoryByID(id int) (m.BillCategory, er
 
 func (e *BillCategoryRepository) CreateBillCategory(billCategory m.BillCategory) error {
 
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableBillCategory+" (name) VALUES ($1);", billCategory.Name)
+	_, err := db.Exec("INSERT INTO "+tableBillCategory+" (name) VALUES (?);", billCategory.Name)
 	if err != nil {
 		return err
 	}

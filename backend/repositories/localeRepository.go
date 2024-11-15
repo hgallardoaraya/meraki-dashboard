@@ -10,8 +10,7 @@ type LocaleRepository struct{}
 var tableLocale string = "locale"
 
 func (e *LocaleRepository) GetLocale() ([]m.Locale, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var locales []m.Locale
 
 	rows, err := db.Query("SELECT * FROM " + tableLocale + ";")
@@ -32,11 +31,10 @@ func (e *LocaleRepository) GetLocale() ([]m.Locale, error) {
 }
 
 func (e *LocaleRepository) GetLocaleByID(id int) (m.Locale, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var locale m.Locale
 
-	err := db.QueryRow("SELECT * FROM "+tableLocale+" WHERE id = $1;", id).Scan(&locale.ID, &locale.Name, &locale.Address)
+	err := db.QueryRow("SELECT * FROM "+tableLocale+" WHERE id = ?;", id).Scan(&locale.ID, &locale.Name, &locale.Address)
 	if err != nil {
 		return m.Locale{}, err
 	}
@@ -46,10 +44,9 @@ func (e *LocaleRepository) GetLocaleByID(id int) (m.Locale, error) {
 
 func (e *ProviderRepository) CreateLocale(locale m.Locale) error {
 
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableLocale+" (name, description) VALUES ($1, $2);", locale.Name, locale.Address)
+	_, err := db.Exec("INSERT INTO "+tableLocale+" (name, description) VALUES (?, ?);", locale.Name, locale.Address)
 	if err != nil {
 		return err
 	}

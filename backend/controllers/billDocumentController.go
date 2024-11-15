@@ -12,8 +12,7 @@ import (
 type BillDocumentController struct{}
 
 func (e *BillDocumentController) GetDocumentCategory(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var billDocuments []m.BillDocument
 
 	rows, err := db.Query("SELECT * FROM document_category;")

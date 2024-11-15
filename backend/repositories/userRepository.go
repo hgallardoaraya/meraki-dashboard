@@ -10,8 +10,7 @@ type UserRepository struct{}
 var tableUser string = "usuario"
 
 func (e *UserRepository) GetUser() ([]m.User, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var users []m.User
 
 	rows, err := db.Query("SELECT * FROM " + tableUser + ";")
@@ -21,7 +20,7 @@ func (e *UserRepository) GetUser() ([]m.User, error) {
 
 	for rows.Next() {
 		var user m.User
-		err := rows.Scan(&user.ID, &user.RoleID, &user.SedeID, &user.Name, &user.LastName, &user.SecondLastName, &user.Rut, &user.DV)
+		err := rows.Scan(&user.ID, &user.RoleID, &user.LocaleID, &user.Name, &user.LastName, &user.SecondLastName, &user.Rut, &user.DV)
 		if err != nil {
 			return nil, err
 		}
@@ -32,11 +31,10 @@ func (e *UserRepository) GetUser() ([]m.User, error) {
 }
 
 func (e *UserRepository) GetUserByID(id int) (m.User, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var user m.User
 
-	err := db.QueryRow("SELECT * FROM "+tableUser+" WHERE id = $1;", id).Scan(&user.ID, &user.RoleID, &user.SedeID, &user.Name, &user.LastName, &user.SecondLastName, &user.Rut, &user.DV)
+	err := db.QueryRow("SELECT * FROM "+tableUser+" WHERE id = ?;", id).Scan(&user.ID, &user.RoleID, &user.LocaleID, &user.Name, &user.LastName, &user.SecondLastName, &user.Rut, &user.DV)
 	if err != nil {
 		return m.User{}, err
 	}
@@ -46,10 +44,9 @@ func (e *UserRepository) GetUserByID(id int) (m.User, error) {
 
 func (e *UserRepository) CreateUser(user m.User) error {
 
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableUser+" (role_id, sede_id, name, last_name, second_last_name, rut, dv) VALUES ($1, $2, $3, $4, $5, $6, $7);", user.RoleID, user.SedeID, user.Name, user.LastName, user.SecondLastName, user.Rut, user.DV)
+	_, err := db.Exec("INSERT INTO "+tableUser+" (role_id, sede_id, name, last_name, second_last_name, rut, dv) VALUES (?, ?, ?, ?, ?, ?, ?);", user.RoleID, user.LocaleID, user.Name, user.LastName, user.SecondLastName, user.Rut, user.DV)
 	if err != nil {
 		return err
 	}

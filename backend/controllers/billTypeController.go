@@ -12,8 +12,7 @@ import (
 type BillTypeController struct{}
 
 func (e *BillTypeController) GetBillType(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var billTypes []m.BillType
 
 	rows, err := db.Query("SELECT * FROM bill_type;")

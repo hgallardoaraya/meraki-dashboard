@@ -10,8 +10,7 @@ type BillRepository struct{}
 var tableBill string = "bill"
 
 func (e *BillRepository) GetBill() ([]m.Bill, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var bills []m.Bill
 
 	rows, err := db.Query("SELECT * FROM " + tableBill + ";")
@@ -22,7 +21,7 @@ func (e *BillRepository) GetBill() ([]m.Bill, error) {
 	for rows.Next() {
 		var bill m.Bill
 		err := rows.Scan(&bill.ID, &bill.UserID, &bill.BillType, &bill.CategoryID, &bill.ContableDate, &bill.DteID,
-			&bill.Image, &bill.Notes, &bill.ProviderID, &bill.SedeID, &bill.TotalAmount, &bill.TotalIva, &bill.TotalNeto,
+			&bill.Image, &bill.Notes, &bill.ProviderID, &bill.LocaleID, &bill.TotalAmount, &bill.TotalIva, &bill.TotalNeto,
 			&bill.CreationDate)
 		if err != nil {
 			return nil, err
@@ -34,12 +33,11 @@ func (e *BillRepository) GetBill() ([]m.Bill, error) {
 }
 
 func (e *BillRepository) GetBillByID(id int) (m.Bill, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var bill m.Bill
 
-	err := db.QueryRow("SELECT * FROM "+tableBill+" WHERE id = $1;", id).Scan(&bill.ID, &bill.UserID, &bill.BillType, &bill.CategoryID, &bill.ContableDate, &bill.DteID,
-		&bill.Image, &bill.Notes, &bill.ProviderID, &bill.SedeID, &bill.TotalAmount, &bill.TotalIva, &bill.TotalNeto,
+	err := db.QueryRow("SELECT * FROM "+tableBill+" WHERE id = ?;", id).Scan(&bill.ID, &bill.UserID, &bill.BillType, &bill.CategoryID, &bill.ContableDate, &bill.DteID,
+		&bill.Image, &bill.Notes, &bill.ProviderID, &bill.LocaleID, &bill.TotalAmount, &bill.TotalIva, &bill.TotalNeto,
 		&bill.CreationDate)
 	if err != nil {
 		return m.Bill{}, err
@@ -50,12 +48,11 @@ func (e *BillRepository) GetBillByID(id int) (m.Bill, error) {
 
 func (e *UserRepository) CreateBill(user m.Bill) error {
 
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableBill+" (user_id, bill_type, category_id, contable_date, dte_id, image, notes, provider_id, sede_id, total_amount, total_iva, total_neto, creation_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);", 
+	_, err := db.Exec("INSERT INTO "+tableBill+" (user_id, bill_type, category_id, contable_date, dte_id, image, notes, provider_id, sede_id, total_amount, total_iva, total_neto, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 		&user.UserID, &user.BillType, &user.CategoryID, &user.ContableDate, &user.DteID,
-		&user.Image, &user.Notes, &user.ProviderID, &user.SedeID, &user.TotalAmount, &user.TotalIva, &user.TotalNeto,
+		&user.Image, &user.Notes, &user.ProviderID, &user.LocaleID, &user.TotalAmount, &user.TotalIva, &user.TotalNeto,
 		&user.CreationDate)
 	if err != nil {
 		return err

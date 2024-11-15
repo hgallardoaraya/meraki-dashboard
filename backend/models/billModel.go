@@ -4,7 +4,7 @@ package models
 type Bill struct {
 	ID           int    `json:"id"`
 	ProviderID   int    `json:"provider_id"`
-	SedeID       int    `json:"sede_id"`
+	LocaleID     int    `json:"locale_id"`
 	DteID        int    `json:"dte_id"`
 	UserID       int    `json:"user_id"`
 	CategoryID   int    `json:"category_id"`
