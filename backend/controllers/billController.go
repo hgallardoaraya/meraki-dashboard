@@ -12,8 +12,7 @@ import (
 type BillController struct{}
 
 func (e *BillController) GetBill(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var bills []m.Bill
 
 	rows, err := db.Query("SELECT * FROM bill;")

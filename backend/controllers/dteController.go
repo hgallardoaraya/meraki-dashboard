@@ -9,11 +9,10 @@ import (
 	m "dashboard/models"
 )
 
-type dteController struct{}
+type DteController struct{}
 
-func (e *dteController) GetDte(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+func (e *DteController) GetDte(c *gin.Context) {
+	db := database.GetDB()
 	var dtes []m.Dte
 
 	rows, err := db.Query("SELECT * FROM dte;")

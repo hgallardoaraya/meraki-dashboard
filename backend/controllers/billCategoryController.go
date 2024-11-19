@@ -12,9 +12,7 @@ import (
 type BillCategoryController struct{}
 
 func (e *BillCategoryController) GetBillCategory(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-
+	db := database.GetDB()
 	rows, err := db.Query("SELECT * FROM bill_categories;")
 
 	if err != nil {

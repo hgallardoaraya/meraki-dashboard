@@ -9,35 +9,35 @@ import (
 	m "dashboard/models"
 )
 
-type DteController struct{}
+type ProviderController struct{}
 
-func (e *DteController) GetDte(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var dtes []m.Dte
+func (e *ProviderController) GetProvider(c *gin.Context) {
+	db := database.GetDB()
 
-	rows, err := db.Query("SELECT * FROM dte;")
+	rows, err := db.Query("SELECT * FROM proveedor;")
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get dte",
+			"message": "Failed to get provider",
 		})
 		return
 	}
 
+	var providers []m.Provider
 	for rows.Next() {
-		var dte m.Dte
-		err := rows.Scan(&dte.ID, &dte.Name)
+		var provider m.Provider
+		err := rows.Scan(&provider.ID, &provider.Name)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get dte",
+				"message": "Failed to get provider",
 				"error":   err,
 			})
 			return
 		}
-		dtes = append(dtes, dte)
+		providers = append(providers, provider)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": dtes,
+		"message": providers,
 	})
 }

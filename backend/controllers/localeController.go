@@ -12,8 +12,7 @@ import (
 type SedeController struct{}
 
 func (e *SedeController) GetSede(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var sedes []m.Locale
 
 	rows, err := db.Query("SELECT * FROM sede;")

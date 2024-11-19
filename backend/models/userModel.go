@@ -9,5 +9,5 @@ type User struct {
 	Rut            string `json:"rut"`
 	DV             string `json:"dv"`
 	RoleID         int    `json:"role_id"`
-	SedeID         int    `json:"sede_id"`
+	LocaleID       int    `json:"locale_id"`
 }

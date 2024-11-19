@@ -12,5 +12,7 @@ func UserRouter(r *gin.RouterGroup) {
 	roleRoutes := r.Group("/users")
 	{
 		roleRoutes.GET("/", userController.GetUser)
+		roleRoutes.GET("/:id", userController.GetUserByID)
+		roleRoutes.POST("/", userController.CreateUser)
 	}
 }
