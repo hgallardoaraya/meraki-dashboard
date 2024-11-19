@@ -7,7 +7,7 @@ import (
 
 type RoleRepository struct{}
 
-var tableRole string = "rol"
+var tableRole string = "role"
 
 func (e *RoleRepository) GetRole() ([]m.Role, error) {
 	db := database.GetDB()
@@ -46,7 +46,7 @@ func (e *RoleRepository) CreateRole(role m.Role) error {
 
 	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableRole+" (nombre) VALUES (?);", role.Name)
+	_, err := db.Exec("INSERT INTO "+tableRole+" (name) VALUES (?);", role.Name)
 	if err != nil {
 		return err
 	}

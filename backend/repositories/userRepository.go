@@ -7,7 +7,7 @@ import (
 
 type UserRepository struct{}
 
-var tableUser string = "usuario"
+var tableUser string = "user"
 
 func (e *UserRepository) GetUser() ([]m.User, error) {
 	db := database.GetDB()

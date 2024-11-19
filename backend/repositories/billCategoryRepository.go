@@ -7,7 +7,7 @@ import (
 
 type BillCategoryRepository struct{}
 
-var tableBillCategory string = "categoria"
+var tableBillCategory string = "bill_category"
 
 func (e *BillCategoryRepository) GetBillCategory() ([]m.BillCategory, error) {
 	db := database.GetDB()
