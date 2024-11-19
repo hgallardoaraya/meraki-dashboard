@@ -22,6 +22,7 @@ func main() {
 	{
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
+		routes.LocaleRouter(api)
 	}
 
 	// Start the server

@@ -4,17 +4,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-	r "dashboard/repositories"
 	m "dashboard/models"
+	r "dashboard/repositories"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct{}
 
-var userRepository r.UserRepository = r.UserRepository{};
+var userRepository r.UserRepository = r.UserRepository{}
 
-func (e *UserController) GetUser(c *gin.Context) {
-	users, err := userRepository.GetUser()
+func (e *UserController) GetUsers(c *gin.Context) {
+	users, err := userRepository.GetUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get users",

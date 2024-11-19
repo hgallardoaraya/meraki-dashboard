@@ -9,7 +9,7 @@ type RoleRepository struct{}
 
 var tableRole string = "role"
 
-func (e *RoleRepository) GetRole() ([]m.Role, error) {
+func (e *RoleRepository) GetRoles() ([]m.Role, error) {
 	db := database.GetDB()
 	var roles []m.Role
 

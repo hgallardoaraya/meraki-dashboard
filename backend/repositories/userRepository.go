@@ -9,7 +9,7 @@ type UserRepository struct{}
 
 var tableUser string = "user"
 
-func (e *UserRepository) GetUser() ([]m.User, error) {
+func (e *UserRepository) GetUsers() ([]m.User, error) {
 	db := database.GetDB()
 	var users []m.User
 

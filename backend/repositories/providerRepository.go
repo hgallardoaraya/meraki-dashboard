@@ -9,7 +9,7 @@ type ProviderRepository struct{}
 
 var tableProvider string = "provider"
 
-func (e *ProviderRepository) GetProvider() ([]m.Provider, error) {
+func (e *ProviderRepository) GetProviders() ([]m.Provider, error) {
 	db := database.GetDB()
 	var providers []m.Provider
 
@@ -35,6 +35,7 @@ func (e *ProviderRepository) GetProviderByID(id int) (m.Provider, error) {
 	var provider m.Provider
 
 	err := db.QueryRow("SELECT * FROM "+tableProvider+" WHERE id = ?;", id).Scan(&provider.ID, &provider.Name, &provider.Description)
+
 	if err != nil {
 		return m.Provider{}, err
 	}
