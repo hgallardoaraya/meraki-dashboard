@@ -22,7 +22,13 @@ func main() {
 	{
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
+		routes.BillDocumentRouter(api)
+		routes.BillRouter(api)
+		routes.BillCategoryRouter(api)
+		routes.BillTypeRouter(api)
+		routes.DteRouter(api)
 		routes.LocaleRouter(api)
+		routes.ProviderRouter(api)
 	}
 
 	// Start the server
