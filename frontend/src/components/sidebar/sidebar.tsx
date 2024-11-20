@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom"
 import ToggleSidebar from "./toggle-sidebar";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import logoMeraki from "@/assets/meraki-logo.png" // ruta relativa al archivo
-import "./sidebar.css"
 import { useLocation } from "react-router-dom";
-import { RouteItem } from "./sidebar";
+import { RouteItem } from "./types";
 import HomeIcon from "./home-icon";
 import BillsIcon from "./bills-icon";
 import StatisticIcon from "./statistics-icon";
@@ -25,6 +24,11 @@ const routeItems:RouteItem[] = [
       {
         path: "/gastos/ingresar",
         name: "Ingresar gastos",        
+        hasNestedRoutes: false,
+      },
+      {
+        path: "/gastos/listar",
+        name: "Listado de gastos",        
         hasNestedRoutes: false,
       }
     ]
@@ -47,11 +51,11 @@ const Sidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const isActive = (r: RouteItem): boolean => {    
+  const isActive = (r: RouteItem, n?: RouteItem): boolean => {    
     if (!r.hasNestedRoutes) {
-      return currentPath == r.path
-    } else if (r.nestedRoutes !== undefined && r.nestedRoutes != null) {            
-      return r.nestedRoutes.some(n => currentPath == n.path )
+      return currentPath == r.path;
+    } else if (r.nestedRoutes !== undefined && r.nestedRoutes != null && n !== undefined) {            
+      return currentPath == n.path;
     }
     return false
   }
@@ -107,7 +111,7 @@ const Sidebar = () => {
                     <ul className="px-4">
                       { 
                         r.nestedRoutes?.map((n, j) => (  
-                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(r)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
+                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(r, n)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
                             <Link 
                               to={n.path} 
                               className={`hover:text-blue-900 hover:font-semibold`}
