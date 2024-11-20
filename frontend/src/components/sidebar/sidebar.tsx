@@ -113,7 +113,7 @@ const Sidebar = () => {
                     <ul className="px-4">
                       { 
                         r.nestedRoutes?.map((n, j) => (  
-                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(r, n)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
+                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(r)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
                             <Link 
                               to={n.path} 
                               className={`hover:text-blue-900 hover:font-semibold`}
