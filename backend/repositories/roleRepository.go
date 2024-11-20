@@ -7,11 +7,10 @@ import (
 
 type RoleRepository struct{}
 
-var tableRole string = "rol"
+var tableRole string = "role"
 
-func (e *RoleRepository) GetRole() ([]m.Role, error) {
-	db := database.Conn()
-	defer db.Close()
+func (e *RoleRepository) GetRoles() ([]m.Role, error) {
+	db := database.GetDB()
 	var roles []m.Role
 
 	rows, err := db.Query("SELECT * FROM " + tableRole + ";")
@@ -32,11 +31,10 @@ func (e *RoleRepository) GetRole() ([]m.Role, error) {
 }
 
 func (e *RoleRepository) GetRoleByID(id int) (m.Role, error) {
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 	var role m.Role
 
-	err := db.QueryRow("SELECT * FROM "+tableRole+" WHERE id = $1;", id).Scan(&role.ID, &role.Name)
+	err := db.QueryRow("SELECT * FROM "+tableRole+" WHERE id = ?;", id).Scan(&role.ID, &role.Name)
 	if err != nil {
 		return m.Role{}, err
 	}
@@ -46,10 +44,9 @@ func (e *RoleRepository) GetRoleByID(id int) (m.Role, error) {
 
 func (e *RoleRepository) CreateRole(role m.Role) error {
 
-	db := database.Conn()
-	defer db.Close()
+	db := database.GetDB()
 
-	_, err := db.Exec("INSERT INTO "+tableRole+" (name) VALUES ($1);", role.Name)
+	_, err := db.Exec("INSERT INTO "+tableRole+" (name) VALUES (?);", role.Name)
 	if err != nil {
 		return err
 	}

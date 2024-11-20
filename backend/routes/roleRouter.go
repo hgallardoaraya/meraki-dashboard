@@ -11,7 +11,7 @@ func RoleRouter(r *gin.RouterGroup) {
 
 	roleRoutes := r.Group("/roles")
 	{
-		roleRoutes.GET("/", roleController.GetRole)
+		roleRoutes.GET("/", roleController.GetRoles)
 		roleRoutes.GET("/:id", roleController.GetRoleByID)
 		roleRoutes.POST("/", roleController.CreateRole)
 	}

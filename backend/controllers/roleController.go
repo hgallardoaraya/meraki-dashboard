@@ -15,8 +15,8 @@ type RoleController struct{}
 
 var roleRepository r.RoleRepository = r.RoleRepository{}
 
-func (e *RoleController) GetRole(c *gin.Context) {
-	roles, err := roleRepository.GetRole()
+func (e *RoleController) GetRoles(c *gin.Context) {
+	roles, err := roleRepository.GetRoles()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get roles",

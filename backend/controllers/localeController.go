@@ -1,43 +1,80 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"dashboard/database"
 	m "dashboard/models"
+	r "dashboard/repositories"
 )
 
-type SedeController struct{}
+type LocaleController struct{}
 
-func (e *SedeController) GetSede(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var sedes []m.Locale
+var localeRepository r.LocaleRepository = r.LocaleRepository{}
 
-	rows, err := db.Query("SELECT * FROM sede;")
+func (e *LocaleController) GetLocales(c *gin.Context) {
+	locales, err := localeRepository.GetLocales()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get sede",
+			"message": "Failed to get locals",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	for rows.Next() {
-		var sede m.Locale
-		err := rows.Scan(&sede.ID, &sede.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get sede",
-				"error":   err,
-			})
-			return
-		}
-		sedes = append(sedes, sede)
+	c.JSON(http.StatusOK, gin.H{
+		"locales": locales,
+	})
+}
+
+func (e *LocaleController) GetLocaleByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid locale ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	locale, err := localeRepository.GetLocaleByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get locale",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": sedes,
+		"locale": locale,
+	})
+}
+
+func (e *LocaleController) CreateLocale(c *gin.Context) {
+	var locale m.Locale
+	err := c.BindJSON(&locale)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to create locale",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = localeRepository.CreateLocale(locale)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create locale",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Locale %s created successfully", locale.Name),
 	})
 }

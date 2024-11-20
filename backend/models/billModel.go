@@ -4,11 +4,11 @@ package models
 type Bill struct {
 	ID           int    `json:"id"`
 	ProviderID   int    `json:"provider_id"`
-	SedeID       int    `json:"sede_id"`
+	LocaleID     int    `json:"locale_id"`
 	DteID        int    `json:"dte_id"`
 	UserID       int    `json:"user_id"`
 	CategoryID   int    `json:"category_id"`
-	BillType     string `json:"bill_type"`
+	TypeID       int    `json:"type_id"`
 	TotalIva     int    `json:"total_iva"`
 	TotalAmount  int    `json:"total_amount"`
 	TotalNeto    int    `json:"total_neto"`
