@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -62,6 +63,8 @@ func (e *BillController) CreateBill(c *gin.Context) {
 		})
 		return
 	}
+
+	fmt.Println(bill)
 
 	err = billRepository.CreateBill(bill)
 	if err != nil {
