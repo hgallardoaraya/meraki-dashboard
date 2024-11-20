@@ -2,42 +2,77 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"dashboard/database"
 	m "dashboard/models"
+	r "dashboard/repositories"
 )
 
-type dteController struct{}
+type DteController struct{}
 
-func (e *dteController) GetDte(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var dtes []m.Dte
+var dteRepository r.DteRepository = r.DteRepository{}
 
-	rows, err := db.Query("SELECT * FROM dte;")
+func (e *DteController) GetDtes(c *gin.Context) {
+	dtes, err := dteRepository.GetDtes()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get dte",
+			"message": "Failed to get Dtes",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	for rows.Next() {
-		var dte m.Dte
-		err := rows.Scan(&dte.ID, &dte.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get dte",
-				"error":   err,
-			})
-			return
-		}
-		dtes = append(dtes, dte)
+	c.JSON(http.StatusOK, gin.H{
+		"dtes": dtes,
+	})
+}
+
+func (e *DteController) GetDteByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid Dte ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+	dte, err := dteRepository.GetDteByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get Dte",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": dtes,
+		"dte": dte,
+	})
+}
+
+func (e *DteController) CreateDte(c *gin.Context) {
+	var dte m.Dte
+	err := c.BindJSON(&dte)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to create Dte",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = dteRepository.CreateDte(dte)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create Dte",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Dte created",
 	})
 }

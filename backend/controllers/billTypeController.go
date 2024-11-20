@@ -2,42 +2,77 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"dashboard/database"
 	m "dashboard/models"
+	r "dashboard/repositories"
 )
 
 type BillTypeController struct{}
 
-func (e *BillTypeController) GetBillType(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var billTypes []m.BillType
+var billTypeRepository r.BillTypeRepository = r.BillTypeRepository{}
 
-	rows, err := db.Query("SELECT * FROM bill_type;")
+func (e *BillTypeController) GetBillTypes(c *gin.Context) {
+	billTypes, err := billTypeRepository.GetBillTypes()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get bill type",
+			"message": "Failed to get bill types",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	for rows.Next() {
-		var billType m.BillType
-		err := rows.Scan(&billType.ID, &billType.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get bill type",
-				"error":   err,
-			})
-			return
-		}
-		billTypes = append(billTypes, billType)
+	c.JSON(http.StatusOK, gin.H{
+		"billTypes": billTypes,
+	})
+}
+
+func (e *BillTypeController) GetBillTypeByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid bill type ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+	billType, err := billTypeRepository.GetBillTypeByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get bill type",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": billTypes,
+		"billType": billType,
+	})
+}
+
+func (e *BillTypeController) CreateBillType(c *gin.Context) {
+	var billType m.BillType
+	err := c.BindJSON(&billType)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to create bill type",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = billTypeRepository.CreateBillType(billType)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create bill type",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Bill type created",
 	})
 }

@@ -2,21 +2,43 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
+
+	m "dashboard/models"
+	r "dashboard/repositories"
 
 	"github.com/gin-gonic/gin"
-
-	"dashboard/database"
-	m "dashboard/models"
 )
 
 type UserController struct{}
 
-func (e *UserController) GetUser(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var users []m.User
+var userRepository r.UserRepository = r.UserRepository{}
 
-	rows, err := db.Query("SELECT * FROM usuario;")
+func (e *UserController) GetUsers(c *gin.Context) {
+	users, err := userRepository.GetUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get users",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
+	})
+}
+
+func (e *UserController) GetUserByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid user ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+	user, err := userRepository.GetUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get user",
@@ -25,41 +47,23 @@ func (e *UserController) GetUser(c *gin.Context) {
 		return
 	}
 
-	for rows.Next() {
-		var user m.User
-		err := rows.Scan(&user.ID, &user.RoleID, &user.SedeID, &user.Name, &user.LastName, &user.SecondLastName, &user.Rut, &user.DV)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get user",
-				"error":   err,
-			})
-			return
-		}
-		users = append(users, user)
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"message": users,
+		"user": user,
 	})
 }
 
-func (e *UserController) GetUserByID(c *gin.Context) {}
-
 func (e *UserController) CreateUser(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
 	var user m.User
-
-	if err := c.BindJSON(&user); err != nil {
+	err := c.BindJSON(&user)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Failed to bind JSON",
+			"message": "Failed to create user",
 			"error":   err.Error(),
 		})
 		return
 	}
 
-	_, err := db.Exec("INSERT INTO usuario (role_id, sede_id, name, last_name, second_last_name, rut, dv) VALUES (?, ?, ?, ?, ?, ?, ?);",
-		user.RoleID, user.SedeID, user.Name, user.LastName, user.SecondLastName, user.Rut, user.DV)
+	err = userRepository.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to create user",
@@ -68,7 +72,7 @@ func (e *UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"message": "User created",
 	})
 }

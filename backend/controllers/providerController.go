@@ -1,43 +1,82 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"dashboard/database"
 	m "dashboard/models"
+	r "dashboard/repositories"
 )
 
-type DteController struct{}
+type ProviderController struct{}
 
-func (e *DteController) GetDte(c *gin.Context) {
-	db := database.Conn()
-	defer db.Close()
-	var dtes []m.Dte
+var providerRepository r.ProviderRepository = r.ProviderRepository{}
 
-	rows, err := db.Query("SELECT * FROM dte;")
+func (e *ProviderController) GetProviders(c *gin.Context) {
+	providers, err := providerRepository.GetProviders()
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get dte",
+			"message": "Failed to get providers",
+			"error":   err.Error(),
 		})
 		return
 	}
 
-	for rows.Next() {
-		var dte m.Dte
-		err := rows.Scan(&dte.ID, &dte.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to get dte",
-				"error":   err,
-			})
-			return
-		}
-		dtes = append(dtes, dte)
+	c.JSON(http.StatusOK, gin.H{
+		"providers": providers,
+	})
+}
+
+func (e *ProviderController) GetProviderByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get the id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	provider, err := providerRepository.GetProviderByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get the provider",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": dtes,
+		"provider": provider,
+	})
+}
+
+func (e *ProviderController) CreateProvider(c *gin.Context) {
+	var provider m.Provider
+	err := c.BindJSON(&provider)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = providerRepository.CreateProvider(provider)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to create provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Provider %s created successfully", provider.Name),
 	})
 }
