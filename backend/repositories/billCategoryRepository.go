@@ -9,7 +9,7 @@ type BillCategoryRepository struct{}
 
 var tableBillCategory string = "bill_category"
 
-func (e *BillCategoryRepository) GetBillCategory() ([]m.BillCategory, error) {
+func (e *BillCategoryRepository) GetBillCategories() ([]m.BillCategory, error) {
 	db := database.GetDB()
 	var billCategories []m.BillCategory
 
