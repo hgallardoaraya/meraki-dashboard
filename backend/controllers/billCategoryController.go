@@ -75,3 +75,52 @@ func (e *BillCategoryController) CreateBillCategory(c *gin.Context) {
 		"message": "Bill category created",
 	})
 }
+
+func (e *BillCategoryController) UpdateBillCategory(c *gin.Context) {
+	var billCategory m.BillCategory
+	err := c.BindJSON(&billCategory)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to update bill category",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = billCategoryRepository.UpdateBillCategory(billCategory)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update bill category",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Bill category updated",
+	})
+}
+
+func (e *BillCategoryController) DeleteBillCategory(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid bill category ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = billCategoryRepository.DeleteBillCategory(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to delete bill category",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Bill category deleted",
+	})
+}

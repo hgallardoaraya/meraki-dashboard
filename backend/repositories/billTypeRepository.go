@@ -4,7 +4,6 @@ import (
 	"dashboard/database"
 	m "dashboard/models"
 )
-
 type BillTypeRepository struct{}
 
 var tableBillType string = "bill_type"
@@ -47,6 +46,29 @@ func (e *BillTypeRepository) CreateBillType(billType m.BillType) error {
 	db := database.GetDB()
 
 	_, err := db.Exec("INSERT INTO "+tableBillType+" (name) VALUES (?);", billType.Name)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *BillTypeRepository) UpdateBillType(billType m.BillType) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableBillType+" SET name = ? WHERE id = ?;", billType.Name, billType.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *BillTypeRepository) DeleteBillType(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableBillType+" WHERE id = ?;", id)
 	if err != nil {
 		return err
 	}
