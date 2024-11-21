@@ -53,3 +53,26 @@ func (e *BillCategoryRepository) CreateBillCategory(billCategory m.BillCategory)
 
 	return nil
 }
+
+func (e *BillCategoryRepository) UpdateBillCategory(billCategory m.BillCategory) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableBillCategory+" SET name = ? WHERE id = ?;", billCategory.Name, billCategory.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *BillCategoryRepository) DeleteBillCategory(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableBillCategory+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

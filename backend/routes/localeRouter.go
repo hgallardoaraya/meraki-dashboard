@@ -14,5 +14,7 @@ func LocaleRouter(r *gin.RouterGroup) {
 		localeRoutes.GET("/", localeController.GetLocales)
 		localeRoutes.GET("/:id", localeController.GetLocaleByID)
 		localeRoutes.POST("/", localeController.CreateLocale)
+		localeRoutes.PUT("/:id", localeController.UpdateLocale)
+		localeRoutes.DELETE("/:id", localeController.DeleteLocale)
 	}
 }

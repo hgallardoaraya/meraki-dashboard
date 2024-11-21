@@ -53,3 +53,26 @@ func (e *LocaleRepository) CreateLocale(locale m.Locale) error {
 
 	return nil
 }
+
+func (e *LocaleRepository) UpdateLocale(locale m.Locale) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableLocale+" SET name = ?, address = ? WHERE id = ?;", locale.Name, locale.Address, locale.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *LocaleRepository) DeleteLocale(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableLocale+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -14,5 +14,7 @@ func ProviderRouter(r *gin.RouterGroup) {
 		providerRoutes.GET("/", providerController.GetProviders)
 		providerRoutes.GET("/:id", providerController.GetProviderByID)
 		providerRoutes.POST("/", providerController.CreateProvider)
+		providerRoutes.PUT("/:id", providerController.UpdateProvider)
+		providerRoutes.DELETE("/:id", providerController.DeleteProvider)
 	}
 }

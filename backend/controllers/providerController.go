@@ -80,3 +80,53 @@ func (e *ProviderController) CreateProvider(c *gin.Context) {
 		"message": fmt.Sprintf("Provider %s created successfully", provider.Name),
 	})
 }
+
+func (e *ProviderController) UpdateProvider(c *gin.Context) {
+	var provider m.Provider
+	err := c.BindJSON(&provider)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = providerRepository.UpdateProvider(provider)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Provider %s updated successfully", provider.Name),
+	})
+}
+
+func (e *ProviderController) DeleteProvider(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get the id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = providerRepository.DeleteProvider(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to delete provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Provider deleted successfully",
+	})
+}
