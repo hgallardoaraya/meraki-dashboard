@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { Bill, NewBill } from "./types";
+import { Bill, NewBill } from "@/types/bills";
 
 interface UseCreateBillReturn {
   createBill: (newBill: NewBill) => Promise<void>;
@@ -16,11 +16,9 @@ const useCreateBill = (): UseCreateBillReturn => {
     try {
       setLoading(true);       
       setError(null);             
-      const response = await axios.post<Bill>("http://localhost:8080/api/bills/", newBill); // Endpoint para crear gastos
-      const data = response.data;
-      console.log(data);
+      await axios.post<Bill>("http://localhost:8080/api/bills/", newBill);      
     } catch (error: any) {
-      const message = error.response?.data?.message || "Error al crear el gasto";
+      const message = error.response?.data?.message || "error al crear el gasto";
       setError(message); 
     } finally {
       setLoading(false);       
