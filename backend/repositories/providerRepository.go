@@ -4,7 +4,6 @@ import (
 	"dashboard/database"
 	m "dashboard/models"
 )
-
 type ProviderRepository struct{}
 
 var tableProvider string = "provider"
@@ -48,6 +47,29 @@ func (e *ProviderRepository) CreateProvider(provider m.Provider) error {
 	db := database.GetDB()
 
 	_, err := db.Exec("INSERT INTO "+tableProvider+" (name, description) VALUES (?, ?);", provider.Name, provider.Description)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *ProviderRepository) UpdateProvider(provider m.Provider) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableProvider+" SET name = ?, description = ? WHERE id = ?;", provider.Name, provider.Description, provider.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *ProviderRepository) DeleteProvider(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableProvider+" WHERE id = ?;", id)
 	if err != nil {
 		return err
 	}

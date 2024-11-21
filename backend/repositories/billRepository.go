@@ -27,7 +27,6 @@ func (e *BillRepository) GetBills() ([]r.Bill, error) {
 		INNER JOIN %s bt ON bt.id = b.bill_type_id		
 		;`,
 		tableBill, tableProvider, tableUser, tableLocale, tableBillCategory, tableBillType)
-	fmt.Println(query)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err

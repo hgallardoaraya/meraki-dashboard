@@ -14,5 +14,7 @@ func BillCategoryRouter(r *gin.RouterGroup) {
 		billCategoriesRoutes.GET("/", billCategoryController.GetBillCategories)
 		billCategoriesRoutes.GET("/:id", billCategoryController.GetBillCategoryByID)
 		billCategoriesRoutes.POST("/", billCategoryController.CreateBillCategory)
+		billCategoriesRoutes.PUT("/:id", billCategoryController.UpdateBillCategory)
+		billCategoriesRoutes.DELETE("/:id", billCategoryController.DeleteBillCategory)
 	}
 }
