@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 
 	"dashboard/database"
+	auth "dashboard/middlewares"
 	routes "dashboard/routes"
 )
 
@@ -24,6 +26,8 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: true,
 	}))
+
+	r.Use(auth.AuthMiddleware())
 
 	// Create a new group for the API
 	api := r.Group("/api")
