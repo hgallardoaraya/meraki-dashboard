@@ -8,8 +8,9 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 
+	auth "dashboard/auth"
 	"dashboard/database"
-	auth "dashboard/middlewares"
+	middleware "dashboard/middlewares"
 	routes "dashboard/routes"
 )
 
@@ -27,11 +28,12 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.Use(auth.AuthMiddleware())
-
-	// Create a new group for the API
 	api := r.Group("/api")
 	{
+		auth.AuthRouter(api)
+
+		api.Use(middleware.AuthMiddleware())
+
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
 		routes.BillDocumentRouter(api)
@@ -44,7 +46,7 @@ func main() {
 	}
 
 	// Start the server
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(":8081"); err != nil {
 		fmt.Println("Failed to start server")
 	}
 }
