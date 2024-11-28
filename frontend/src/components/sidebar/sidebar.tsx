@@ -3,10 +3,11 @@ import ToggleSidebar from "./toggle-sidebar";
 import React, { useState } from "react";
 import logoMeraki from "@/assets/meraki-logo.png" // ruta relativa al archivo
 import { useLocation } from "react-router-dom";
-import { RouteItem } from "./types";
 import HomeIcon from "./home-icon";
 import BillsIcon from "./bills-icon";
 import StatisticIcon from "./statistics-icon";
+import { RouteItem } from "@/types/sidebar";
+import MaintainerIcon from "./maintainer-icon";
 
 const routeItems:RouteItem[] = [
   {
@@ -34,6 +35,34 @@ const routeItems:RouteItem[] = [
     ]
   },
   {
+    path: "/mantenedores",
+    name: "Mantenedores",
+    icon: <MaintainerIcon/>,
+    hasNestedRoutes: true,
+    nestedRoutes: [
+      {
+        path: "/mantenedores/locales",
+        name: "Locales",        
+        hasNestedRoutes: false,
+      },
+      {
+        path: "/mantenedores/categorias",
+        name: "Categorías",        
+        hasNestedRoutes: false,
+      },
+      {
+        path: "/mantenedores/tipos",
+        name: "Tipos",        
+        hasNestedRoutes: false,
+      },
+      {
+        path: "/mantenedores/proveedores",
+        name: "Proveedores",        
+        hasNestedRoutes: false,
+      }
+    ]
+  },
+  {
     path: "/estadisticas",
     name: "Estadísticas",
     icon: <StatisticIcon/>,
@@ -51,13 +80,13 @@ const Sidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const isActive = (r: RouteItem, n?: RouteItem): boolean => {    
-    if (!r.hasNestedRoutes) {
-      return currentPath == r.path;
-    } else if (r.nestedRoutes !== undefined && r.nestedRoutes != null && n !== undefined) {            
-      return currentPath == n.path;
-    }
-    return false
+  const isActive = (r: RouteItem): boolean => {    
+    return currentPath == r.path;
+  }
+  
+  const someNestedRouteActive = (r: RouteItem): boolean => {
+    if(!r.hasNestedRoutes || r.nestedRoutes == undefined) return false;
+    return r.nestedRoutes?.some(n => isActive(n));
   }
 
   const handleNavParentItemClick = (r: RouteItem): void => {
@@ -79,14 +108,14 @@ const Sidebar = () => {
           <nav className="w-full select-none">
             <ul className="flex flex-col items-start">
               {routeItems.map((r, i) => (
-                <>
-                  <li className={`py-2 px-4 rounded-md w-full ${(isActive(r)) ? "bg-blue-100 text-blue-800 fill-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-route${i}`}>
+                <div className="w-full" key={`nav-route${i}`}>
+                  <li className={`py-2 px-4 rounded-md w-full ${(isActive(r) || someNestedRouteActive(r)) ? "bg-blue-100 text-blue-800 fill-blue-800 font-semibold" : "text-gray-900"}`}>
                     {
                       r.hasNestedRoutes ? 
                       (
                         <>
                           <div className={`flex items-center hover:text-blue-900 hover:font-semibold cursor-pointer bg-inherit ${isSidebarOpen && "gap-2"}`} onClick={() => handleNavParentItemClick(r)}>
-                            {r.icon && React.cloneElement(r.icon, { variant: isActive(r) ? "solid" : "outline" })}
+                            {r.icon && React.cloneElement(r.icon, { variant: someNestedRouteActive(r) ? "solid" : "outline" })}
                             { isSidebarOpen && r.name }                                                
                           </div>                                         
                         </>                                            
@@ -106,12 +135,14 @@ const Sidebar = () => {
                     }                
                   </li>            
                   {
+                    isSidebarOpen
+                    &&
                     openNavItem == r.name
                     &&
                     <ul className="px-4">
                       { 
                         r.nestedRoutes?.map((n, j) => (  
-                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(r, n)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
+                          <li className={`py-2 px-4 rounded-md w-full ${(isActive(n)) ? "text-blue-800 font-semibold" : "text-gray-900"}`} key={`nav-sub-route${j}`}>
                             <Link 
                               to={n.path} 
                               className={`hover:text-blue-900 hover:font-semibold`}
@@ -125,7 +156,7 @@ const Sidebar = () => {
                       }
                     </ul>
                   }    
-                </>
+                </div>
                 
               ))}
             </ul>

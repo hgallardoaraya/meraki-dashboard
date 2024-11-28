@@ -1,8 +1,6 @@
-package models
+package auth
 
-// User struct
-type User struct {
-	ID             int    `json:"id"`
+type RegisterRequest struct {
 	Username       string `json:"username"`
 	Password       string `json:"password"`
 	Name           string `json:"name"`
