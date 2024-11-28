@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,8 @@ import (
 )
 
 func main() {
+	port := os.Getenv("PORT")
+
 	// Create a new router
 	r := gin.Default()
 
@@ -46,7 +49,7 @@ func main() {
 	}
 
 	// Start the server
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(":"+port); err != nil {
 		fmt.Println("Failed to start server")
 	}
 }
