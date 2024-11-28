@@ -26,11 +26,13 @@ CREATE TABLE IF NOT EXISTS
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role_id INTEGER NOT NULL,
     locale_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
     name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     second_last_name TEXT NOT NULL,
     rut INTEGER NOT NULL,
     dv TEXT NOT NULL,
+    password TEXT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES role (id),
     FOREIGN KEY (locale_id) REFERENCES locale (id)
   );
