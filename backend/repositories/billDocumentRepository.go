@@ -56,3 +56,26 @@ func (e *BillDocumentRepository) CreateBillDocument(billDocument m.BillDocument)
 
 	return nil
 }
+
+func (e *BillDocumentRepository) UpdateBillDocument(billDocument m.BillDocument) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableBillDocument+" SET name = ?, format = ?, bill_id = ? WHERE id = ?;", billDocument.Name, billDocument.Format, billDocument.BillID, billDocument.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *BillDocumentRepository) DeleteBillDocument(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableBillDocument+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -79,3 +79,52 @@ func (e *BillController) CreateBill(c *gin.Context) {
 		"message": "Bill created",
 	})
 }
+
+func (e *BillController) UpdateBill(c *gin.Context) {
+	var bill m.Bill
+	err := c.BindJSON(&bill)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to update bill",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = billRepository.UpdateBill(bill)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update bill",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Bill updated",
+	})
+}
+
+func (e *BillController) DeleteBill(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid bill ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = billRepository.DeleteBill(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to delete bill",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Bill deleted",
+	})
+}

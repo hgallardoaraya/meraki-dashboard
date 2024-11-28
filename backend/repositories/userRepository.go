@@ -65,3 +65,26 @@ func (e *UserRepository) CreateUser(user m.User) error {
 
 	return nil
 }
+
+func (e *UserRepository) UpdateUser(user m.User) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableUser+" SET role_id = ?, locale_id = ?, name = ?, username = ?, last_name = ?, second_last_name = ?, rut = ?, dv = ?, password = ? WHERE id = ?;", 
+		user.RoleID, user.LocaleID, user.Name, user.Username, user.LastName, user.SecondLastName, user.Rut, user.DV, user.Password, user.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *UserRepository) DeleteUser(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableUser+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
