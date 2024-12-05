@@ -11,6 +11,7 @@ export type Bill = {
   total_neto: number,
   notes: string,
   image: string,
+  documents: FileList | undefined,
   creation_date: Date,
   contable_date: Date
 }
