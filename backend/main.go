@@ -1,7 +1,9 @@
 package main
 
 import (
+	middleware "dashboard/middlewares"
 	"fmt"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -10,7 +12,6 @@ import (
 
 	auth "dashboard/auth"
 	"dashboard/database"
-	middleware "dashboard/middlewares"
 	routes "dashboard/routes"
 )
 
@@ -32,7 +33,10 @@ func main() {
 	{
 		auth.AuthRouter(api)
 
-		api.Use(middleware.AuthMiddleware())
+		env := os.Getenv("ENV")
+		if env == "prod" {
+			api.Use(middleware.AuthMiddleware())
+		}
 
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
@@ -45,8 +49,12 @@ func main() {
 		routes.ProviderRouter(api)
 	}
 
+	ServerPort := os.Getenv("SERVER_PORT")
+	if len(ServerPort) == 0 {
+		ServerPort = "8081"
+	}
 	// Start the server
-	if err := r.Run(":8081"); err != nil {
+	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}
 }
