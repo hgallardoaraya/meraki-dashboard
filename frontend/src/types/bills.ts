@@ -11,6 +11,7 @@ export type Bill = {
   total_neto: number,
   notes: string,
   image: string,
+  documents: FileList | undefined,
   creation_date: Date,
   contable_date: Date
 }
@@ -39,6 +40,33 @@ export type BillWithDetailsTextDates = Omit<BillWithDetails, 'creation_date' | '
 
 
 export type NewBill = Omit<Bill, "id">;
+
+export type Locale = {
+  id: number;
+  name: string;
+  address?: string; 
+}
+export type NewLocale = Omit<Locale, "id">
+
+export type Provider = {
+  id: number;
+  name: string;
+  description: string;
+}
+export type NewProvider = Omit<Provider, "id">
+
+
+export type Category = {
+  id: number;
+  name: string;
+}
+export type NewCategory = Omit<Category, "id">
+
+export type Type = {
+  id: number;
+  name: string;
+}
+export type NewType = Omit<Category, "id">
 
 export interface ErrorState {
   globalError: string | null;

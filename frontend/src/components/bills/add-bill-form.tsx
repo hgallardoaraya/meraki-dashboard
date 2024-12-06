@@ -23,18 +23,22 @@ import { Calendar } from "../ui/calendar"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
 import { Separator } from "../ui/separator"
-import useBills from "./use-bills"
-import { NewBill } from "./types"
 import { Spinner } from "../common/spinner"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { useEffect, useState } from "react"
+import useCreateBill from "./use-create-bill"
+import { NewBill } from "@/types/bills"
+import useFetchLocales from "./use-fetch-locales"
+import useFetchProviders from "./use-fetch-providers"
+import useFetchCategories from "./use-fetch-categories"
+import useFetchTypes from "./use-fetch-types"
 
 // Tamaño máximo de archivo de 5 MB.
 const MAX_FILE_SIZE = 5000000;
 
 function checkFileType(file: File) {
   const fileType = file.name.split(".").pop();
-  return fileType === "docx" || fileType === "pdf";
+  return fileType === "docx" || fileType === "pdf" || fileType === "png" || fileType === "jpg";
 }
 
 const defaultValues = {
@@ -48,7 +52,6 @@ const defaultValues = {
   total_iva: 0,
   total_amount: 0,
   notes: "",
-  documents: undefined,
 }
 
 const FormSchema = z.object({
@@ -88,14 +91,14 @@ const FormSchema = z.object({
   .refine((files) => files && files.length > 0, {
     message: "Se requiere al menos un archivo",
   })
-  .refine(
-    (files: FileList) => Array.from(files).every((file) => file.size < MAX_FILE_SIZE),
-    { message: "Cada archivo debe ser menor de 5MB." }
-  )
-  .refine(
-    (files: FileList) => Array.from(files).every((file) => checkFileType(file)),
-    { message: "Solo se admiten formatos .pdf y .docx." }
-  )
+  // .refine(
+  //   (files: FileList) => Array.from(files).every((file) => file.size < MAX_FILE_SIZE),
+  //   { message: "Cada archivo debe ser menor de 5MB." }
+  // )
+  // .refine(
+  //   (files: FileList) => Array.from(files).every((file) => checkFileType(file)),
+  //   { message: "Solo se admiten formatos .pdf y .docx." }
+  // )
   .optional()
 })
 
@@ -104,13 +107,12 @@ export function AddBillForm() {
     resolver: zodResolver(FormSchema),
     defaultValues
   })
-  
-  useEffect(() => {
-    console.log("Current form values:", form.getValues());
-  }, [form.watch()]);
-  
 
-  const { createBill, createLoading, createError } = useBills();
+  const { createBill, loading, error } = useCreateBill();
+  const { locales } = useFetchLocales();
+  const { providers } = useFetchProviders();
+  const { categories } = useFetchCategories();
+  const { types } = useFetchTypes();
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [closeAlert, setCloseAlert] = useState<boolean>(true);
 
@@ -129,6 +131,7 @@ export function AddBillForm() {
       dte_id: 1,
       user_id: 1,
       image: "image.png",
+      documents: data.documents,
     }
 
     await createBill(newBill);
@@ -137,6 +140,7 @@ export function AddBillForm() {
       ...defaultValues,
       creation_date: undefined,
       contable_date: undefined,
+      documents: undefined,
     });    
 
     setSubmitted(true);
@@ -145,13 +149,13 @@ export function AddBillForm() {
 
   return (
     <>
-      { createLoading && (
+      { loading && (
         <div className="flex justify-start items-center gap-2">
           <Spinner size="medium" className="text-blue-700"/>
           <span className="text-blue-700 font-medium">Cargando...</span>
         </div>
       )}
-      { submitted && !closeAlert && ((createError == null) ? (
+      { submitted && !closeAlert && ((error == null) ? (
         <div className="border border-solid border-green-700 rounded-md flex">
           <Alert variant="success">
             <CheckCircleIcon className="h-4 w-4" />
@@ -189,10 +193,11 @@ export function AddBillForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">NO APLICA</SelectItem>
-                        <SelectItem value="2">MAIPÚ</SelectItem>
-                        <SelectItem value="3">DUOC UC 1</SelectItem>
-                        <SelectItem value="4">DUOC UC 2</SelectItem>
+                        {
+                          locales.map((l, i) => (
+                            <SelectItem value={l.id.toString()} key={`locale_${l.id}`}>{l.name}</SelectItem>
+                          ))
+                        }                                                
                       </SelectContent>
                     </Select>                            
                     <FormMessage />
@@ -213,9 +218,11 @@ export function AddBillForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">LO VALLEDOR</SelectItem>
-                        <SelectItem value="2">LA VEGA</SelectItem>
-                        <SelectItem value="3">CENTRAL MAYORISTA</SelectItem>
+                        {
+                          providers.map(p => (
+                            <SelectItem value={p.id.toString()} key={`provider_${p.id}`}>{p.name}</SelectItem>
+                          ))
+                        }                            
                       </SelectContent>
                     </Select>      
                     <FormMessage />                      
@@ -236,10 +243,11 @@ export function AddBillForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">MANTENCIÓN</SelectItem>
-                        <SelectItem value="2">SUELDOS</SelectItem>
-                        <SelectItem value="3">PROVEEDORES</SelectItem>
-                        <SelectItem value="4">OTROS</SelectItem>
+                        {
+                          categories.map(c => (
+                            <SelectItem value={c.id.toString()} key={`category_${c.id}`}>{c.name}</SelectItem>
+                          ))
+                        }                            
                       </SelectContent>
                     </Select>
                     <FormMessage />                            
@@ -260,10 +268,11 @@ export function AddBillForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">FIJO</SelectItem>
-                        <SelectItem value="2">VARIABLE</SelectItem>
-                        <SelectItem value="3">OCASIONAL</SelectItem>
-                        <SelectItem value="4">OTROS</SelectItem>
+                        {
+                          types.map(t => (
+                            <SelectItem value={t.id.toString()} key={`type_${t.id}`}>{t.name}</SelectItem>
+                          ))
+                        }                            
                       </SelectContent>
                     </Select>
                     <FormMessage />                            
@@ -371,7 +380,7 @@ export function AddBillForm() {
                   <FormItem className="space-y-0 col-span-2">
                     <FormLabel className="text-gray-900">Monto neto</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ingresa el monto total" {...field} value={field.value} defaultValue={field.value} />
+                      <Input placeholder="Ingresa el monto total" {...field} />
                     </FormControl>              
                     <FormMessage />
                   </FormItem>
@@ -385,7 +394,7 @@ export function AddBillForm() {
                   <FormItem className="space-y-0 col-span-2">
                     <FormLabel className="text-gray-900">Monto IVA</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ingresa el monto con IVA" {...field} value={field.value} defaultValue={field.value} />
+                      <Input placeholder="Ingresa el monto con IVA" {...field} />
                     </FormControl>     
                     <FormMessage />         
                   </FormItem>
@@ -399,7 +408,7 @@ export function AddBillForm() {
                   <FormItem className="space-y-0 col-span-2">
                     <FormLabel className="text-gray-900">Monto total</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ingresa el monto total " {...field} value={field.value} defaultValue={field.value} />
+                      <Input placeholder="Ingresa el monto total " {...field} />
                     </FormControl>        
                     <FormMessage />      
                   </FormItem>
@@ -420,7 +429,6 @@ export function AddBillForm() {
                   <FormLabel className="text-gray-900">Descripción</FormLabel>
                   <FormControl>
                     <Textarea
-                      defaultValue={field.value}                      
                       placeholder="Ingresa una descripción para el gasto"
                       className="resize-none"                      
                       {...field}
@@ -438,7 +446,11 @@ export function AddBillForm() {
                 <FormItem className="space-y-0">
                   <FormLabel className="text-gray-900">Documentos</FormLabel>
                   <FormControl>
-                    <Input type="file" multiple {...field}/>
+                    <Input 
+                      type="file" 
+                      multiple                       
+                      onChange={(e) => field.onChange(e.target.files)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
