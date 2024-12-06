@@ -9,6 +9,7 @@ import (
 	r "dashboard/repositories"
 	"strconv"
 )
+
 type BillCategoryController struct{}
 
 var billCategoryRepository r.BillCategoryRepository = r.BillCategoryRepository{}
@@ -86,6 +87,17 @@ func (e *BillCategoryController) UpdateBillCategory(c *gin.Context) {
 		})
 		return
 	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid bill category ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	billCategory.ID = id
 
 	err = billCategoryRepository.UpdateBillCategory(billCategory)
 	if err != nil {
