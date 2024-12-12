@@ -1,7 +1,7 @@
 import { DataTable } from "../ui/data-table";
 import { ColumnDef } from "@tanstack/react-table"
 import { Locale, NewLocale } from "@/types/bills";
-import { AlertCircle, ArrowUpDown, CheckCircleIcon, Trash, Trash2, X } from "lucide-react"
+import { AlertCircle, ArrowUpDown, CheckCircleIcon, CheckSquare2, Edit, Trash2, X, XSquare } from "lucide-react"
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "../common/spinner";
 import { Alert, AlertTitle } from "../ui/alert";
 import useLocale from "../maintainers/use-locale";
@@ -41,60 +41,107 @@ const defaultValues = {
 const LocalesMaintainer = () => {
   const columns: ColumnDef<Locale>[] = [
     {
-      accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="flex justify-start !p-0 w-full"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Local
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
+      id: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="flex justify-start !p-0 w-full"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Local
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        if (row.original.id === rowToUpdate?.id) {
+          return (
+            <Input
+              key={rowToUpdate?.id}
+              className="h-9 w-full"
+              value={rowToUpdate.name}
+              autoFocus={focusedInput === "name"}
+              onChange={(e) => handleRowChange("name", e.target.value)}
+            />
+          );
+        }
+        return row.original.name;
       },
+      size: 200,
+      maxSize: 200,
+      minSize: 200,
+      enableResizing: false,
     },
     {
-      accessorKey: "address",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="flex justify-start !p-0 w-full"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Dirección
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
+      id: "address",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="flex justify-start !p-0 w-full"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Dirección
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        if (row.original.id === rowToUpdate?.id) {
+          return (
+            <Input
+              key={rowToUpdate?.id}
+              size={1}
+              value={rowToUpdate.address}
+              autoFocus={focusedInput === "address"}
+              onChange={(e) => handleRowChange("address", e.target.value)}
+              className="h-9 w-full"
+            />
+          );
+        }
+        return row.original.address;
       },
+      size: 200,
+      maxSize: 200,
+      minSize: 200,
+      enableResizing: false,
     },
     {
       id: "action",
-      header: ({ column }) => {
-        return (
-          <div className="flex justify-center w-full">
-            Acción
-          </div>
-        )
-      },
-      cell: ({row}) => {
-        return (
-          <div className="flex justify-center w-full">
-            <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
-          </div>
-        )
-      }
+      header: () => (
+        <div className="flex justify-center w-full">
+          Acción
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex justify-center w-full gap-4">
+          <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
+          {row.original.id === rowToUpdate?.id ? (
+            <div className="flex justify-center items-center gap-2">
+              {applyChangesInit ? (
+                <Spinner size="icon" className="text-blue-700" />
+              ) : (
+                <>
+                  <CheckSquare2 className="text-green-700 cursor-pointer hover:text-green-900" onClick={() => applyChanges()} />
+                  <XSquare className="text-red-500 cursor-pointer hover:text-red-800" onClick={() => cancelChanges()} />
+                </>
+              )}
+            </div>
+          ) : (
+            <Edit className="text-blue-600 h-5 w-5 cursor-pointer hover:text-blue-800" onClick={() => handleUpdateClick(row.original)} />
+          )}
+        </div>
+      ),
+      size: 50,
+      maxSize: 50,
+      minSize: 50,
     },
-  ]
+  ];
+  
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues
   })
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {  
     const newLocale: NewLocale = {
       name: data.name,
       address: data.address,
@@ -122,15 +169,42 @@ const LocalesMaintainer = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const handleDeleteClick = async (id: number) => {
+  const handleDeleteClick = (id: number) => {
     setIdToDelete(id);
     setIsDeleteDialogOpen(true);
   }
 
-  
-  const { createLocale, deleteLocale, loading: localeCrudLoading, error: localeCrudError } = useLocale();
+  const handleUpdateClick = (row: Locale) => {
+    console.log("edit id: ", row.id)
+    setRowToUpdate(row);  
+    // setIsDeleteDialogOpen(true);
+  }
+
+  const handleRowChange = (key: string, value: any) => {
+    setRowToUpdate((prev) =>
+      prev ? { ...prev, [key]: value } : prev
+    )
+    if(key === "name" || key === "address" || key === "") {
+      setFocusedInput(key)
+    }
+  }
+
+  const applyChanges = async () => {
+    if(rowToUpdate === undefined) return;
+    setApplyChangesInit(true);    
+  }
+
+  const cancelChanges = () => {
+    setRowToUpdate(undefined);
+    setFocusedInput("")
+  }
+
+  const { createLocale, deleteLocale, updateLocale, loading: localeCrudLoading, error: localeCrudError } = useLocale();
   const [ idToDelete, setIdToDelete ] = useState<number>(0);
+  const [ rowToUpdate, setRowToUpdate ] = useState<Locale | undefined>(undefined);
+  const [ focusedInput, setFocusedInput ] = useState<"name" | "address" | "">("")
   const { locales, fetchLocales, loading: loadingFetchLocales } = useFetchLocales();
+  const [ applyChangesInit, setApplyChangesInit ] = useState<boolean>(false);
   
   const [ isDialogOpen, setIsDialogOpen ] = useState(false);
   const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState<boolean>(false);
@@ -138,6 +212,25 @@ const LocalesMaintainer = () => {
   const [ submitted, setSubmitted ] = useState<boolean>(false);
   const [ closeAlert, setCloseAlert ] = useState<boolean>(false);
   const [ localeLastOp, setLocaleLastOp ] = useState<string>("");
+
+  const updateLocaleWrapper = async () => {
+    if(rowToUpdate === undefined) return;
+    await updateLocale(rowToUpdate);
+    setLocaleLastOp("U");
+    if(localeCrudError === null) {
+      await fetchLocales();
+    }
+    setRowToUpdate(undefined);
+    setSubmitted(true);
+    setCloseAlert(false);
+    setFocusedInput("");
+    setApplyChangesInit(false);        
+  }
+
+  useEffect(() => {
+    updateLocaleWrapper();
+  }, [applyChangesInit])
+
 
   return (
     <div className="w-full">      
@@ -161,6 +254,11 @@ const LocalesMaintainer = () => {
                 &&
                 <AlertTitle>Local eliminado con éxito</AlertTitle>
               }
+              {
+                localeLastOp == "U"
+                &&
+                <AlertTitle>Local actualizado con éxito</AlertTitle>
+              }
             </Alert>      
             <X className="h-6 w-6 text-green-700 cursor-pointer" onClick={() => setCloseAlert(true)}/>
           </div>
@@ -178,6 +276,11 @@ const LocalesMaintainer = () => {
                 localeLastOp == "D"
                 &&
                 <AlertTitle>Error al eliminar local</AlertTitle>
+              }
+              {
+                localeLastOp == "U"
+                &&
+                <AlertTitle>Error al actualizar local</AlertTitle>
               }
             </Alert>      
             <X className="h-6 w-6 text-red-500 cursor-pointer" onClick={() => setCloseAlert(true)}/>

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"dashboard/helpers"
 	"net/http"
 	"strconv"
 
@@ -54,19 +54,35 @@ func (e *BillController) GetBillByID(c *gin.Context) {
 }
 
 func (e *BillController) CreateBill(c *gin.Context) {
-	var bill m.Bill
-	err := c.BindJSON(&bill)
+	form, err := c.MultipartForm()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Failed to create bill",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get form",
 			"error":   err.Error(),
 		})
 		return
 	}
+	bill, err := helpers.GetBillFromMultipartForm(form)
+	files := form.File["files"]
+	err = helpers.SaveFiles(files, c.SaveUploadedFile)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to save files",
+			"error":   err.Error(),
+		})
+		return
+	}
+	var documents []m.BillDocument
+	for _, f := range files {
+		name, ext := helpers.ExtractFileNameAndExtension(f)
+		doc := m.BillDocument{
+			Name:   name,
+			Format: ext,
+		}
+		documents = append(documents, doc)
+	}
 
-	fmt.Println(bill)
-
-	err = billRepository.CreateBill(bill)
+	err = billRepository.CreateBill(bill, documents)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to create bill",
@@ -74,7 +90,6 @@ func (e *BillController) CreateBill(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Bill created",
 	})

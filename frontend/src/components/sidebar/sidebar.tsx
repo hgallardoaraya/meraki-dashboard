@@ -8,6 +8,8 @@ import BillsIcon from "./bills-icon";
 import StatisticIcon from "./statistics-icon";
 import { RouteItem } from "@/types/sidebar";
 import MaintainerIcon from "./maintainer-icon";
+import { DollarSign } from "lucide-react";
+import SalesIcon from "./sales-icon";
 
 const routeItems:RouteItem[] = [
   {
@@ -61,6 +63,12 @@ const routeItems:RouteItem[] = [
         hasNestedRoutes: false,
       }
     ]
+  },
+  {
+    path: "/ventas",
+    name: "Ventas",
+    icon: <SalesIcon/>,
+    hasNestedRoutes: false,
   },
   {
     path: "/estadisticas",

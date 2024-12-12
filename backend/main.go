@@ -1,6 +1,7 @@
 package main
 
 import (
+	middleware "dashboard/middlewares"
 	"fmt"
 	"os"
 
@@ -11,13 +12,11 @@ import (
 
 	auth "dashboard/auth"
 	"dashboard/database"
-	middleware "dashboard/middlewares"
 	routes "dashboard/routes"
+	fudo "dashboard/fudo"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-
 	// Create a new router
 	r := gin.Default()
 
@@ -34,9 +33,12 @@ func main() {
 	api := r.Group("/api")
 	{
 		auth.AuthRouter(api)
-		
-		api.Use(middleware.AuthMiddleware())
-		
+
+		env := os.Getenv("ENV")
+		if env == "prod" {
+			api.Use(middleware.AuthMiddleware())
+		}
+
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
 		routes.BillDocumentRouter(api)
@@ -46,10 +48,20 @@ func main() {
 		routes.DteRouter(api)
 		routes.LocaleRouter(api)
 		routes.ProviderRouter(api)
+
+		fudo.SaleRouter(api)
+
+	}
+
+	ServerPort := os.Getenv("SERVER_PORT")
+	
+	if len(ServerPort) == 0 {
+		ServerPort = "8081"
 	}
 
 	// Start the server
-	if err := r.Run(":"+port); err != nil {
+	
+	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}
 }

@@ -4,7 +4,9 @@ import (
 	"dashboard/database"
 	m "dashboard/models"
 	r "dashboard/responses"
+	"database/sql"
 	"fmt"
+	"strings"
 )
 
 type BillRepository struct{}
@@ -61,17 +63,48 @@ func (e *BillRepository) GetBillByID(id int) (m.Bill, error) {
 	return bill, nil
 }
 
-func (e *BillRepository) CreateBill(bill m.Bill) error {
+func (e *BillRepository) CreateBill(bill m.Bill, documents []m.BillDocument) error {
 	db := database.GetDB()
-
-	_, err := db.Exec("INSERT INTO "+tableBill+" (user_id, bill_type_id, category_id, contable_date, dte_id, image, notes, provider_id, locale_id, total_amount, total_iva, total_neto, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-		bill.UserID, bill.TypeID, bill.CategoryID, bill.ContableDate, bill.DteID,
-		bill.Image, bill.Notes, bill.ProviderID, bill.LocaleID, bill.TotalAmount, bill.TotalIva, bill.TotalNeto,
-		bill.CreationDate)
+	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
+	var res sql.Result
+	res, err = tx.Exec("INSERT INTO "+tableBill+" (user_id, bill_type_id, category_id, contable_date, dte_id, image, notes, provider_id, locale_id, total_amount, total_iva, total_neto, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+		bill.UserID, bill.TypeID, bill.CategoryID, bill.ContableDate, bill.DteID,
+		bill.Image, bill.Notes, bill.ProviderID, bill.LocaleID, bill.TotalAmount, bill.TotalIva, bill.TotalNeto,
+		bill.CreationDate)
+	if err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return rbErr
+		}
+		return err
+	}
+
+	var lastInsertedRowId int64
+	lastInsertedRowId, err = res.LastInsertId()
+	var plh []string
+	var parameters []interface{}
+	for _, doc := range documents {
+		plh = append(plh, fmt.Sprintf("(?, ?, ?)"))
+		parameters = append(parameters, lastInsertedRowId, doc.Name, doc.Format)
+	}
+	_, err = tx.Exec(fmt.Sprintf(`
+		INSERT INTO %s (bill_id, name, format) 
+		VALUES %s;`, tableBillDocument, strings.Join(plh, ",")),
+		parameters...,
+	)
+	if err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return rbErr
+		}
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

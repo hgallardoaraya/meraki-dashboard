@@ -93,6 +93,34 @@ func (e *ProviderController) UpdateProvider(c *gin.Context) {
 		return
 	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get the id",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	provider.ID = id
+
+	providerRegistered, err := providerRepository.GetProviderByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get the provider",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if provider.Name == "" {
+		provider.Name = providerRegistered.Name
+	}
+
+	if provider.Description == "" {
+		provider.Description = providerRegistered.Description
+	}
+
 	err = providerRepository.UpdateProvider(provider)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

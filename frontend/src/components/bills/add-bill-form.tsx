@@ -38,7 +38,7 @@ const MAX_FILE_SIZE = 5000000;
 
 function checkFileType(file: File) {
   const fileType = file.name.split(".").pop();
-  return fileType === "docx" || fileType === "pdf";
+  return fileType === "docx" || fileType === "pdf" || fileType === "png" || fileType === "jpg";
 }
 
 const defaultValues = {
@@ -52,7 +52,6 @@ const defaultValues = {
   total_iva: 0,
   total_amount: 0,
   notes: "",
-  documents: undefined,
 }
 
 const FormSchema = z.object({
@@ -92,14 +91,14 @@ const FormSchema = z.object({
   .refine((files) => files && files.length > 0, {
     message: "Se requiere al menos un archivo",
   })
-  .refine(
-    (files: FileList) => Array.from(files).every((file) => file.size < MAX_FILE_SIZE),
-    { message: "Cada archivo debe ser menor de 5MB." }
-  )
-  .refine(
-    (files: FileList) => Array.from(files).every((file) => checkFileType(file)),
-    { message: "Solo se admiten formatos .pdf y .docx." }
-  )
+  // .refine(
+  //   (files: FileList) => Array.from(files).every((file) => file.size < MAX_FILE_SIZE),
+  //   { message: "Cada archivo debe ser menor de 5MB." }
+  // )
+  // .refine(
+  //   (files: FileList) => Array.from(files).every((file) => checkFileType(file)),
+  //   { message: "Solo se admiten formatos .pdf y .docx." }
+  // )
   .optional()
 })
 
@@ -132,6 +131,7 @@ export function AddBillForm() {
       dte_id: 1,
       user_id: 1,
       image: "image.png",
+      documents: data.documents,
     }
 
     await createBill(newBill);
@@ -140,6 +140,7 @@ export function AddBillForm() {
       ...defaultValues,
       creation_date: undefined,
       contable_date: undefined,
+      documents: undefined,
     });    
 
     setSubmitted(true);
@@ -445,7 +446,11 @@ export function AddBillForm() {
                 <FormItem className="space-y-0">
                   <FormLabel className="text-gray-900">Documentos</FormLabel>
                   <FormControl>
-                    <Input type="file" multiple {...field}/>
+                    <Input 
+                      type="file" 
+                      multiple                       
+                      onChange={(e) => field.onChange(e.target.files)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

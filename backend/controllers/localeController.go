@@ -90,6 +90,34 @@ func (e *LocaleController) UpdateLocale(c *gin.Context) {
 		return
 	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid locale ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	locale.ID = id
+
+	localeRegistered, err := localeRepository.GetLocaleByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get locale",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if locale.Name == "" {
+		locale.Name = localeRegistered.Name
+	}
+
+	if locale.Address == "" {
+		locale.Address = localeRegistered.Address
+	}
+
 	err = localeRepository.UpdateLocale(locale)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
