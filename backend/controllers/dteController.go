@@ -76,3 +76,52 @@ func (e *DteController) CreateDte(c *gin.Context) {
 		"message": "Dte created",
 	})
 }
+
+func (e *DteController) UpdateDte(c *gin.Context) {
+	var dte m.Dte
+	err := c.BindJSON(&dte)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to update Dte",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = dteRepository.UpdateDte(dte)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to update Dte",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Dte updated",
+	})
+}
+
+func (e *DteController) DeleteDte(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid Dte ID",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = dteRepository.DeleteDte(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to delete Dte",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Dte deleted",
+	})
+}

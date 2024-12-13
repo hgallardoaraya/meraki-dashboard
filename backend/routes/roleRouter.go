@@ -14,5 +14,7 @@ func RoleRouter(r *gin.RouterGroup) {
 		roleRoutes.GET("/", roleController.GetRoles)
 		roleRoutes.GET("/:id", roleController.GetRoleByID)
 		roleRoutes.POST("/", roleController.CreateRole)
+		roleRoutes.PUT("/:id", roleController.UpdateRole)
+		roleRoutes.DELETE("/:id", roleController.DeleteRole)
 	}
 }

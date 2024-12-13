@@ -53,3 +53,26 @@ func (e *DteRepository) CreateDte(dte m.Dte) error {
 
 	return nil
 }
+
+func (e *DteRepository) UpdateDte(dte m.Dte) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableDte+" SET name = ? WHERE id = ?;", dte.Name, dte.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *DteRepository) DeleteDte(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableDte+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
