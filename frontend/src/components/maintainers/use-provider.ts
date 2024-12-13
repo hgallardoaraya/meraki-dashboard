@@ -1,10 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-import { NewProvider } from "@/types/bills";
+import { NewProvider, Provider } from "@/types/bills";
 
 interface UseProviderReturn {
   createProvider: (newProvider: NewProvider) => Promise<void>;
   deleteProvider: (id: number) => Promise<void>;
+  updateProvider: (provider: Provider) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -39,7 +40,20 @@ const useProvider = (): UseProviderReturn => {
     }
   };
 
-  return { createProvider, deleteProvider, loading, error };
+  const updateProvider = async (provider: Provider): Promise<void> => {
+    try {
+      setLoading(true);       
+      setError(null);                   
+      await axios.put("http://localhost:8080/api/providers/"+provider.id, provider);      
+    } catch (error: any) {
+      const message = error.response?.data?.message || "error al actualizar proveedor";
+      setError(message); 
+    } finally {
+      setLoading(false);       
+    }
+  };
+
+  return { createProvider, deleteProvider, updateProvider, loading, error };
 };
 
 export default useProvider;

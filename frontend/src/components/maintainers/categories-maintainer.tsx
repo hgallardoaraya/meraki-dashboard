@@ -1,6 +1,6 @@
 import { DataTable } from "../ui/data-table";
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, ArrowUpDown, CheckCircleIcon, Trash2, X } from "lucide-react"
+import { AlertCircle, ArrowUpDown, CheckCircleIcon, CheckSquare2, Edit, Trash2, X, XSquare } from "lucide-react"
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "../common/spinner";
 import { Alert, AlertTitle } from "../ui/alert";
 import { Category, NewCategory } from "@/types/bills";
@@ -37,6 +37,7 @@ const CategoriesMaintainer = () => {
   const columns: ColumnDef<Category>[] = [
     {
       accessorKey: "name",
+      id: "name",
       header: ({ column }) => {
         return (
           <Button
@@ -49,23 +50,54 @@ const CategoriesMaintainer = () => {
           </Button>
         )
       },
+      cell: ({ row }) => {
+        if (row.original.id === rowToUpdate?.id) {
+          return (
+            <Input
+              key={rowToUpdate?.id}
+              className="h-9 w-full"
+              value={rowToUpdate.name}
+              autoFocus={focusedInput === "name"}
+              onChange={(e) => handleRowChange("name", e.target.value)}
+            />
+          );
+        }
+        return row.original.name;
+      },
+      size: 200,
+      maxSize: 200,
+      minSize: 200,
+      enableResizing: false,
     },
     {
       id: "action",
-      header: ({ column }) => {
-        return (
-          <div className="flex justify-center w-full">
-            Acción
-          </div>
-        )
-      },
-      cell: ({row}) => {
-        return (
-          <div className="flex justify-center w-full">
-            <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
-          </div>
-        )
-      }
+      header: () => (
+        <div className="flex justify-center w-full">
+          Acción
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex justify-center w-full gap-4">
+          <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
+          {row.original.id === rowToUpdate?.id ? (
+            <div className="flex justify-center items-center gap-2">
+              {applyChangesInit ? (
+                <Spinner size="icon" className="text-blue-700" />
+              ) : (
+                <>
+                  <CheckSquare2 className="text-green-700 cursor-pointer hover:text-green-900" onClick={() => applyChanges()} />
+                  <XSquare className="text-red-500 cursor-pointer hover:text-red-800" onClick={() => cancelChanges()} />
+                </>
+              )}
+            </div>
+          ) : (
+            <Edit className="text-blue-600 h-5 w-5 cursor-pointer hover:text-blue-800" onClick={() => handleUpdateClick(row.original)} />
+          )}
+        </div>
+      ),
+      size: 50,
+      maxSize: 50,
+      minSize: 50,
     },
   ]
 
@@ -107,17 +139,63 @@ const CategoriesMaintainer = () => {
     setIsDeleteDialogOpen(true);
   }
 
+  const handleUpdateClick = (row: Category) => {
+    console.log("edit id: ", row.id)
+    setRowToUpdate(row);  
+    // setIsDeleteDialogOpen(true);
+  }
+
+  const handleRowChange = (key: string, value: any) => {
+    setRowToUpdate((prev) =>
+      prev ? { ...prev, [key]: value } : prev
+    )
+    if(key === "name" || key === "") {
+      setFocusedInput(key)
+    }
+  }
+
+  const applyChanges = async () => {
+    if(rowToUpdate === undefined) return;
+    setApplyChangesInit(true);    
+  }
+
+  const cancelChanges = () => {
+    setRowToUpdate(undefined);
+    setFocusedInput("")
+  }
   
-  const { createCategory, deleteCategory, loading: categoryCrudLoading, error: categoryCrudError } = useCategory();
+  const { createCategory, deleteCategory, updateCategory, loading: categoryCrudLoading, error: categoryCrudError } = useCategory();
   const [ idToDelete, setIdToDelete ] = useState<number>(0);
+  const [ rowToUpdate, setRowToUpdate ] = useState<Category | undefined>(undefined);
+  const [ focusedInput, setFocusedInput ] = useState<"name" | "">("")
+  const [ applyChangesInit, setApplyChangesInit ] = useState<boolean>(false);
   const { categories, fetchCategories, loading: loadingFetchCategories } = useFetchCategories();
-  
+
   const [ isDialogOpen, setIsDialogOpen ] = useState(false);
   const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState<boolean>(false);
 
   const [ submitted, setSubmitted ] = useState<boolean>(false);
   const [ closeAlert, setCloseAlert ] = useState<boolean>(false);
   const [ categoryLastOp, setCategoryLastOp ] = useState<string>("");
+
+  const updateCategoryWrapper = async () => {
+    if(rowToUpdate === undefined) return;
+    await updateCategory(rowToUpdate);
+    setCategoryLastOp("U");
+    if(categoryCrudError === null) {
+      await fetchCategories();
+    }
+    setRowToUpdate(undefined);
+    setSubmitted(true);
+    setCloseAlert(false);
+    setFocusedInput("");
+    setApplyChangesInit(false);        
+  }
+
+  useEffect(() => {
+    updateCategoryWrapper();
+  }, [applyChangesInit])
+
 
   return (
     <div className="w-full">      
@@ -141,6 +219,11 @@ const CategoriesMaintainer = () => {
                 &&
                 <AlertTitle>Categoría eliminada con éxito</AlertTitle>
               }
+              {
+                categoryLastOp == "U"
+                &&
+                <AlertTitle>Categoría actualizada con éxito</AlertTitle>
+              }
             </Alert>      
             <X className="h-6 w-6 text-green-700 cursor-pointer" onClick={() => setCloseAlert(true)}/>
           </div>
@@ -158,6 +241,11 @@ const CategoriesMaintainer = () => {
                 categoryLastOp == "D"
                 &&
                 <AlertTitle>Error al eliminar categoría</AlertTitle>
+              }
+              {
+                categoryLastOp == "U"
+                &&
+                <AlertTitle>Error al actualizar categoría</AlertTitle>
               }
             </Alert>      
             <X className="h-6 w-6 text-red-500 cursor-pointer" onClick={() => setCloseAlert(true)}/>

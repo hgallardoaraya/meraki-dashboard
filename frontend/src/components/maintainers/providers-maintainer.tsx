@@ -1,6 +1,6 @@
 import { DataTable } from "../ui/data-table";
 import { ColumnDef } from "@tanstack/react-table"
-import { AlertCircle, ArrowUpDown, CheckCircleIcon, Trash2, X } from "lucide-react"
+import { AlertCircle, ArrowUpDown, CheckCircleIcon, CheckSquare2, Edit, Trash2, X, XSquare } from "lucide-react"
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "../common/spinner";
 import { Alert, AlertTitle } from "../ui/alert";
 import { Provider, NewProvider } from "@/types/bills";
@@ -40,6 +40,7 @@ const defaultValues = {
 const ProvidersMaintainer = () => {
   const columns: ColumnDef<Provider>[] = [
     {
+      id: "name",
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -48,13 +49,32 @@ const ProvidersMaintainer = () => {
             className="flex justify-start !p-0 w-full"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Categoría
+            Proveedor
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
+      cell: ({ row }) => {
+        if (row.original.id === rowToUpdate?.id) {
+          return (
+            <Input
+              key={rowToUpdate?.id}
+              className="h-9 w-full"
+              value={rowToUpdate.name}
+              autoFocus={focusedInput === "name"}
+              onChange={(e) => handleRowChange("name", e.target.value)}
+            />
+          );
+        }
+        return row.original.name;
+      },
+      size: 200,
+      maxSize: 200,
+      minSize: 200,
+      enableResizing: false,
     },
     {
+      id: "description",
       accessorKey: "description",
       header: ({ column }) => {
         return (
@@ -68,23 +88,54 @@ const ProvidersMaintainer = () => {
           </Button>
         )
       },
+      cell: ({ row }) => {
+        if (row.original.id === rowToUpdate?.id) {
+          return (
+            <Input
+              key={rowToUpdate?.id}
+              className="h-9 w-full"
+              value={rowToUpdate.description}
+              autoFocus={focusedInput === "description"}
+              onChange={(e) => handleRowChange("description", e.target.value)}
+            />
+          );
+        }
+        return row.original.description;
+      },
+      size: 200,
+      maxSize: 200,
+      minSize: 200,
+      enableResizing: false,
     },
     {
       id: "action",
-      header: ({ column }) => {
-        return (
-          <div className="flex justify-center w-full">
-            Acción
-          </div>
-        )
-      },
-      cell: ({row}) => {
-        return (
-          <div className="flex justify-center w-full">
-            <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
-          </div>
-        )
-      }
+      header: () => (
+        <div className="flex justify-center w-full">
+          Acción
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex justify-center w-full gap-4">
+          <Trash2 className="text-red-600 h-5 w-5 cursor-pointer hover:text-red-800" onClick={() => handleDeleteClick(row.original.id)} />
+          {row.original.id === rowToUpdate?.id ? (
+            <div className="flex justify-center items-center gap-2">
+              {applyChangesInit ? (
+                <Spinner size="icon" className="text-blue-700" />
+              ) : (
+                <>
+                  <CheckSquare2 className="text-green-700 cursor-pointer hover:text-green-900" onClick={() => applyChanges()} />
+                  <XSquare className="text-red-500 cursor-pointer hover:text-red-800" onClick={() => cancelChanges()} />
+                </>
+              )}
+            </div>
+          ) : (
+            <Edit className="text-blue-600 h-5 w-5 cursor-pointer hover:text-blue-800" onClick={() => handleUpdateClick(row.original)} />
+          )}
+        </div>
+      ),
+      size: 50,
+      maxSize: 50,
+      minSize: 50,
     },
   ]
 
@@ -103,7 +154,7 @@ const ProvidersMaintainer = () => {
     form.reset({
       ...defaultValues,      
     });    
-    setCategoryLastOp("C");
+    setProviderLastOp("C");
     setSubmitted(true);
     setCloseAlert(false);
     await fetchProviders();
@@ -115,7 +166,7 @@ const ProvidersMaintainer = () => {
     form.reset({
       ...defaultValues,      
     });    
-    setCategoryLastOp("D");
+    setProviderLastOp("D");
     setSubmitted(true);
     setCloseAlert(false);
     await fetchProviders();    
@@ -127,17 +178,61 @@ const ProvidersMaintainer = () => {
     setIsDeleteDialogOpen(true);
   }
 
+  const handleUpdateClick = (row: Provider) => {
+    setRowToUpdate(row);  
+    // setIsDeleteDialogOpen(true);
+  }
+
+  const handleRowChange = (key: string, value: any) => {
+    setRowToUpdate((prev) =>
+      prev ? { ...prev, [key]: value } : prev
+    )
+    if(key === "name" || key === "description" || key === "") {
+      setFocusedInput(key)
+    }
+  }
+
+  const applyChanges = async () => {
+    if(rowToUpdate === undefined) return;
+    setApplyChangesInit(true);    
+  }
+
+  const cancelChanges = () => {
+    setRowToUpdate(undefined);
+    setFocusedInput("")
+  }
   
-  const { createProvider, deleteProvider, loading: providerCrudLoading, error: providerCrudError } = useProvider();
+  const { createProvider, deleteProvider, updateProvider, loading: providerCrudLoading, error: providerCrudError } = useProvider();
   const [ idToDelete, setIdToDelete ] = useState<number>(0);
   const { providers, fetchProviders, loading: loadingFetchProviders } = useFetchProviders();
-  
+  const [ rowToUpdate, setRowToUpdate ] = useState<Provider | undefined>(undefined);
+  const [ focusedInput, setFocusedInput ] = useState<"name" | "description" | "">("")
+  const [ applyChangesInit, setApplyChangesInit ] = useState<boolean>(false);
   const [ isDialogOpen, setIsDialogOpen ] = useState(false);
   const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState<boolean>(false);
 
   const [ submitted, setSubmitted ] = useState<boolean>(false);
   const [ closeAlert, setCloseAlert ] = useState<boolean>(false);
-  const [ categoryLastOp, setCategoryLastOp ] = useState<string>("");
+  const [ providerLastOp, setProviderLastOp ] = useState<string>("");
+
+  const updateProviderWrapper = async () => {
+    if(rowToUpdate === undefined) return;
+    await updateProvider(rowToUpdate);
+    setProviderLastOp("U");
+    if(providerCrudError === null) {
+      await fetchProviders();
+    }
+    setRowToUpdate(undefined);
+    setSubmitted(true);
+    setCloseAlert(false);
+    setFocusedInput("");
+    setApplyChangesInit(false);        
+  }
+
+  useEffect(() => {
+    updateProviderWrapper();
+  }, [applyChangesInit])
+
 
   return (
     <div className="w-full">      
@@ -152,14 +247,19 @@ const ProvidersMaintainer = () => {
             <Alert variant="success">
               <CheckCircleIcon className="h-4 w-4" />
               {
-                categoryLastOp == "C"
+                providerLastOp == "C"
                 &&
                 <AlertTitle>Proveedor creado con éxito</AlertTitle>
               }
               {
-                categoryLastOp == "D"
+                providerLastOp == "D"
                 &&
                 <AlertTitle>Proveedor eliminado con éxito</AlertTitle>
+              }
+              {
+                providerLastOp == "U"
+                &&
+                <AlertTitle>Proveedor actualizado con éxito</AlertTitle>
               }
             </Alert>      
             <X className="h-6 w-6 text-green-700 cursor-pointer" onClick={() => setCloseAlert(true)}/>
@@ -170,14 +270,19 @@ const ProvidersMaintainer = () => {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               {
-                categoryLastOp == "C"
+                providerLastOp == "C"
                 &&
                 <AlertTitle>Error al crear proveedor</AlertTitle>
               }
               {
-                categoryLastOp == "D"
+                providerLastOp == "D"
                 &&
                 <AlertTitle>Error al eliminar proveedor</AlertTitle>
+              }
+              {
+                providerLastOp == "U"
+                &&
+                <AlertTitle>Error al actualizar proveedor</AlertTitle>
               }
             </Alert>      
             <X className="h-6 w-6 text-red-500 cursor-pointer" onClick={() => setCloseAlert(true)}/>
