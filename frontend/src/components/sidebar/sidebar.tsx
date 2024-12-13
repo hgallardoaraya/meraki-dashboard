@@ -8,7 +8,6 @@ import BillsIcon from "./bills-icon";
 import StatisticIcon from "./statistics-icon";
 import { RouteItem } from "@/types/sidebar";
 import MaintainerIcon from "./maintainer-icon";
-import { DollarSign } from "lucide-react";
 import SalesIcon from "./sales-icon";
 
 const routeItems:RouteItem[] = [
