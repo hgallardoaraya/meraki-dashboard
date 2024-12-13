@@ -14,5 +14,7 @@ func BillRouter(r *gin.RouterGroup) {
 		billRoutes.GET("/", billController.GetBills)
 		billRoutes.GET("/:id", billController.GetBillByID)
 		billRoutes.POST("/", billController.CreateBill)
+		billRoutes.PUT("/:id", billController.UpdateBill)
+		billRoutes.DELETE("/:id", billController.DeleteBill)
 	}
 }
