@@ -185,7 +185,7 @@ export function AddBillForm() {
                 name="locale_id"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className="text-gray-900">Local</FormLabel>
+                    <FormLabel className="text-gray-800">Local</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value.toString()} defaultValue={field.value.toString()}>
                       <FormControl> 
                         <SelectTrigger>
@@ -210,7 +210,7 @@ export function AddBillForm() {
                 name="provider_id"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className="text-gray-900">Proveedor</FormLabel>
+                    <FormLabel className="text-gray-800">Proveedor</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value.toString()} defaultValue={field.value.toString()}>
                       <FormControl>
                         <SelectTrigger>
@@ -235,7 +235,7 @@ export function AddBillForm() {
                 name="category_id"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className="text-gray-900">Categoría</FormLabel>
+                    <FormLabel className="text-gray-800">Categoría</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value.toString()} defaultValue={field.value.toString()}>
                       <FormControl>
                         <SelectTrigger>
@@ -260,7 +260,7 @@ export function AddBillForm() {
                 name="type_id"
                 render={({ field }) => (
                   <FormItem className="space-y-0">
-                    <FormLabel className="text-gray-900">Tipo</FormLabel>
+                    <FormLabel className="text-gray-800">Tipo</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value.toString()} defaultValue={field.value.toString()}>
                       <FormControl>
                         <SelectTrigger>
@@ -292,7 +292,7 @@ export function AddBillForm() {
                 name="creation_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1 space-y-0 col-span-3">
-                    <FormLabel className="text-gray-900 mt-2">Fecha creación</FormLabel>
+                    <FormLabel className="text-gray-800 mt-2">Fecha creación</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -335,7 +335,7 @@ export function AddBillForm() {
                 name="contable_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-1 space-y-0 col-span-3">
-                    <FormLabel className="text-gray-900 mt-2">Fecha contable</FormLabel>
+                    <FormLabel className="text-gray-800 mt-2">Fecha contable</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -378,7 +378,7 @@ export function AddBillForm() {
                 name="total_neto"
                 render={({ field }) => (
                   <FormItem className="space-y-0 col-span-2">
-                    <FormLabel className="text-gray-900">Monto neto</FormLabel>
+                    <FormLabel className="text-gray-800">Monto neto</FormLabel>
                     <FormControl>
                       <Input placeholder="Ingresa el monto total" {...field} />
                     </FormControl>              
@@ -392,7 +392,7 @@ export function AddBillForm() {
                 name="total_iva"
                 render={({ field }) => (
                   <FormItem className="space-y-0 col-span-2">
-                    <FormLabel className="text-gray-900">Monto IVA</FormLabel>
+                    <FormLabel className="text-gray-800">Monto IVA</FormLabel>
                     <FormControl>
                       <Input placeholder="Ingresa el monto con IVA" {...field} />
                     </FormControl>     
@@ -406,7 +406,7 @@ export function AddBillForm() {
                 name="total_amount"
                 render={({ field }) => (
                   <FormItem className="space-y-0 col-span-2">
-                    <FormLabel className="text-gray-900">Monto total</FormLabel>
+                    <FormLabel className="text-gray-800">Monto total</FormLabel>
                     <FormControl>
                       <Input placeholder="Ingresa el monto total " {...field} />
                     </FormControl>        
@@ -426,7 +426,7 @@ export function AddBillForm() {
               name="notes"              
               render={({ field }) => (
                 <FormItem className="space-y-0 mb-2">
-                  <FormLabel className="text-gray-900">Descripción</FormLabel>
+                  <FormLabel className="text-gray-800">Descripción</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Ingresa una descripción para el gasto"
@@ -444,7 +444,7 @@ export function AddBillForm() {
               name="documents"
               render={({ field }) => (
                 <FormItem className="space-y-0">
-                  <FormLabel className="text-gray-900">Documentos</FormLabel>
+                  <FormLabel className="text-gray-800">Documentos</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 

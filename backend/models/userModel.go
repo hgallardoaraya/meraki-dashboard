@@ -8,7 +8,7 @@ type User struct {
 	Name           string `json:"name"`
 	LastName       string `json:"last_name"`
 	SecondLastName string `json:"second_last_name"`
-	Rut            string `json:"rut"`
+	Rut            int    `json:"rut"`
 	DV             string `json:"dv"`
 	RoleID         int    `json:"role_id"`
 	LocaleID       int    `json:"locale_id"`

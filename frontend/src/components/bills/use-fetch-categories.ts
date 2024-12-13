@@ -23,7 +23,7 @@ const useFetchCategories = (): UseFetchCategoriesReturn => {
     setError(null);
     try {
       const response = await axios.get<AxiosGetCategories>("http://localhost:8080/api/bill_categories/");       
-      setCategories(response.data.billCategories);
+      setCategories(response.data.billCategories || []);
     } catch (err) {
       setError((err as Error).message || "Error al obtener las categorías de gastos");
       setCategories([]);
