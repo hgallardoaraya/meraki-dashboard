@@ -35,7 +35,7 @@ func (s *SaleRepository) FetchAllSales() ([]Sale, error) {
 	jsonInput := `{
   "data": [
     {
-      "id": "0",
+      "id": "1",
       "type": "User",
       "attributes": {
         "closedAt": "2020-05-11T23:15:00.000Z",
@@ -43,7 +43,167 @@ func (s *SaleRepository) FetchAllSales() ([]Sale, error) {
         "createdAt": "2020-05-11T23:15:00.000Z",
         "people": 2,
         "customerName": "Paula",
-        "total": 1350.5,
+        "total": 32000,
+        "saleType": "EAT-IN",
+        "saleState": "IN-COURSE"
+      },
+      "relationships": {
+        "customer": {
+          "data": {
+            "id": "1",
+            "type": "Customer"
+          }
+        },
+        "discounts": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Discount"
+            }
+          }
+        ],
+        "items": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Item"
+            }
+          }
+        ],
+        "payments": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Payment"
+            }
+          }
+        ],
+        "tips": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Tip"
+            }
+          }
+        ],
+        "shippingCosts": [
+          {
+            "data": {
+              "id": "1",
+              "type": "ShippingCost"
+            }
+          }
+        ],
+        "table": {
+          "data": {
+            "id": "1",
+            "type": "Table"
+          }
+        },
+        "waiter": {
+          "data": {
+            "id": "1",
+            "type": "User"
+          }
+        },
+        "saleIdentifier": {
+          "data": {
+            "id": "1",
+            "type": "SaleIdentifier"
+          }
+        }
+      }
+    },
+    {
+      "id": "2",
+      "type": "User",
+      "attributes": {
+        "closedAt": "2020-05-11T23:15:00.000Z",
+        "comment": "This is a comment",
+        "createdAt": "2020-05-11T23:15:00.000Z",
+        "people": 2,
+        "customerName": "Paula",
+        "total": 40000,
+        "saleType": "EAT-IN",
+        "saleState": "IN-COURSE"
+      },
+      "relationships": {
+        "customer": {
+          "data": {
+            "id": "1",
+            "type": "Customer"
+          }
+        },
+        "discounts": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Discount"
+            }
+          }
+        ],
+        "items": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Item"
+            }
+          }
+        ],
+        "payments": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Payment"
+            }
+          }
+        ],
+        "tips": [
+          {
+            "data": {
+              "id": "1",
+              "type": "Tip"
+            }
+          }
+        ],
+        "shippingCosts": [
+          {
+            "data": {
+              "id": "1",
+              "type": "ShippingCost"
+            }
+          }
+        ],
+        "table": {
+          "data": {
+            "id": "1",
+            "type": "Table"
+          }
+        },
+        "waiter": {
+          "data": {
+            "id": "1",
+            "type": "User"
+          }
+        },
+        "saleIdentifier": {
+          "data": {
+            "id": "1",
+            "type": "SaleIdentifier"
+          }
+        }
+      }
+    },
+    {
+      "id": "3",
+      "type": "User",
+      "attributes": {
+        "closedAt": "2020-05-11T23:15:00.000Z",
+        "comment": "This is a comment",
+        "createdAt": "2020-05-11T23:15:00.000Z",
+        "people": 2,
+        "customerName": "Juan",
+        "total": 13000,
         "saleType": "EAT-IN",
         "saleState": "IN-COURSE"
       },
@@ -134,9 +294,9 @@ func (s *SaleRepository) FetchAllSales() ([]Sale, error) {
 
 	for _, data := range apiResponse.Data {
 		sale := Sale{
-			ID:           id,
-			Total:        int(data.Attributes.Total),
-			CloseAt:      data.Attributes.ClosedAt,
+			ID:      id,
+			Total:   int(data.Attributes.Total),
+			CloseAt: data.Attributes.ClosedAt,
 		}
 
 		sales = append(sales, sale)
