@@ -15,6 +15,8 @@ var userRepository r.UserRepository = r.UserRepository{}
 var JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY")
 
 func LoginService(loginRequest LoginRequest) (string, error) {
+	h.GetSells()
+
 	user, err := userRepository.GetUserByUsername(loginRequest.Username)
 
 	if err != nil {
