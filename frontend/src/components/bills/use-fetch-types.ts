@@ -23,7 +23,7 @@ const useFetchTypes = (): UseFetchTypesReturn => {
     setError(null);
     try {
       const response = await axios.get<AxiosGetTypes>("http://localhost:8080/api/bill_types/");       
-      setTypes(response.data.billTypes);
+      setTypes(response.data.billTypes || []);
     } catch (err) {
       setError((err as Error).message || "Error al obtener los tipos de gastos");
       setTypes([]);

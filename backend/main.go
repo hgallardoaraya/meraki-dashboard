@@ -13,6 +13,7 @@ import (
 	auth "dashboard/auth"
 	"dashboard/database"
 	routes "dashboard/routes"
+	fudo "dashboard/fudo"
 )
 
 func main() {
@@ -47,13 +48,19 @@ func main() {
 		routes.DteRouter(api)
 		routes.LocaleRouter(api)
 		routes.ProviderRouter(api)
+
+		fudo.SaleRouter(api)
+
 	}
 
 	ServerPort := os.Getenv("SERVER_PORT")
+	
 	if len(ServerPort) == 0 {
 		ServerPort = "8081"
 	}
+
 	// Start the server
+	
 	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}

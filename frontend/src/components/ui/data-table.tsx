@@ -46,7 +46,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-
       <div className="rounded-md border border-solid border-gray-300">
         <Table>
           <TableHeader>
@@ -101,6 +100,16 @@ export function DataTable<TData, TValue>({
         >
           Anterior
         </Button>
+        {[...Array(table.getPageCount())].map((_, pageIndex) => (
+          <Button
+            key={pageIndex}
+            variant={table.getState().pagination.pageIndex === pageIndex ? "default" : "outline"}
+            size="sm"
+            onClick={() => table.setPageIndex(pageIndex)}
+          >
+            {pageIndex + 1}
+          </Button>
+        ))}
         <Button
           variant="outline"
           size="sm"

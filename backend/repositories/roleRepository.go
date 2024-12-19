@@ -53,3 +53,27 @@ func (e *RoleRepository) CreateRole(role m.Role) error {
 
 	return nil
 }
+
+func (e *RoleRepository) UpdateRole(role m.Role) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableRole+" SET name = ? WHERE id = ?;", role.Name, role.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *RoleRepository) DeleteRole(id int) error {
+	
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableRole+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

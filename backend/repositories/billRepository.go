@@ -107,3 +107,28 @@ func (e *BillRepository) CreateBill(bill m.Bill, documents []m.BillDocument) err
 	}
 	return nil
 }
+
+func (e *BillRepository) UpdateBill(bill m.Bill) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("UPDATE "+tableBill+" SET user_id = ?, bill_type_id = ?, category_id = ?, contable_date = ?, dte_id = ?, image = ?, notes = ?, provider_id = ?, locale_id = ?, total_amount = ?, total_iva = ?, total_neto = ?, creation_date = ? WHERE id = ?;",
+		bill.UserID, bill.TypeID, bill.CategoryID, bill.ContableDate, bill.DteID,
+		bill.Image, bill.Notes, bill.ProviderID, bill.LocaleID, bill.TotalAmount, bill.TotalIva, bill.TotalNeto,
+		bill.CreationDate, bill.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *BillRepository) DeleteBill(id int) error {
+	db := database.GetDB()
+
+	_, err := db.Exec("DELETE FROM "+tableBill+" WHERE id = ?;", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
