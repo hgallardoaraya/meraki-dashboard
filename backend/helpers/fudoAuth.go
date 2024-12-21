@@ -24,6 +24,12 @@ var FUDO_API_SECRET = os.Getenv("FUDO_API_SECRET")
 var FUDO_AUTH_URL = os.Getenv("FUDO_AUTH_URL")
 
 func GetFudoToken() (string, error) {
+	token := os.Getenv("FUDO_TOKEN")
+
+	if token != "" {
+		return token, nil
+	}
+
 	apiURL := FUDO_AUTH_URL
 
 	requestBody := RequestBody{
@@ -48,6 +54,8 @@ func GetFudoToken() (string, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&fudoAuthResponse); err != nil {
 		fmt.Printf("error decoding the response: %v", err)
 	}
+
+	os.Setenv("FUDO_TOKEN", fudoAuthResponse.Token)
 
 	return fudoAuthResponse.Token, nil
 }

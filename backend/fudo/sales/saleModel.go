@@ -1,4 +1,4 @@
-package fudo
+package sales
 
 type Sale struct {
 	ID           int    `json:"id"`

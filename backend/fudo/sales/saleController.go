@@ -1,4 +1,4 @@
-package fudo
+package sales
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ func (e *SaleController) GetSales(c *gin.Context) {
 	sales , err := saleRepository.FetchAllSales()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get bill categories",
+			"message": "Failed to get sales",
 			"error":   err.Error(),
 		})
 		return
