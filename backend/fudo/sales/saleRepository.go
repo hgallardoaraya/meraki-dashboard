@@ -74,7 +74,7 @@ func (s *SaleRepository) FetchAllSales(page string) ([]Sale, error) {
 }
 
 // date format: yyyy-mm
-func (s *SaleRepository) FetchSalesByDate(date string) ([]Sale, error) {
+func (s *SaleRepository) FetchSalesByMonth(date string) ([]Sale, error) {
 	var allSales []Sale
 	page := 1
 
@@ -124,6 +124,68 @@ func (s *SaleRepository) FetchSalesByDate(date string) ([]Sale, error) {
 				return nil, fmt.Errorf("failed to parse CloseAt: %w", err)
 			}
 			if closeAtTime.Format("2006-01") != date[:7] {
+				return allSales, nil
+			}
+
+			allSales = append(allSales, sale)
+		}
+
+		page++
+	}
+
+	return allSales, nil
+}
+
+func (s *SaleRepository) FetchSalesByDay(date string) ([]Sale, error) {
+	var allSales []Sale
+	page := 1
+
+	for {
+		var apiResponse APIResponseList
+		apiURL := os.Getenv("FUDO_API_URL") + "/sales?filter[saleState]=in.(CLOSED)&filter[createdAt]=gte." + date + "T00:00:00Z&page[number]=" + strconv.Itoa(page)
+		token, err := h.GetFudoToken()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get token: %w", err)
+		}
+
+		req, err := http.NewRequest("GET", apiURL, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create request: %w", err)
+		}
+
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Printf("The request could not be made: %v", err)
+			return nil, fmt.Errorf("failed to make request: %w", err)
+		}
+
+		defer resp.Body.Close()
+
+		if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
+			return nil, fmt.Errorf("failed to decode product: %w", err)
+		}
+
+		if len(apiResponse.Data) == 0 {
+			break
+		}
+
+		for index, data := range apiResponse.Data {
+			id, _ := strconv.Atoi(apiResponse.Data[index].ID)
+
+			sale := Sale{
+				ID:      id,
+				Total:   int(data.Attributes.Total),
+				CloseAt: *data.Attributes.ClosedAt,
+			}
+
+			closeAtTime, err := time.Parse(time.RFC3339, sale.CloseAt)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse CloseAt: %w", err)
+			}
+			if closeAtTime.Format("2006-01-02") != date[:10] {
 				return allSales, nil
 			}
 

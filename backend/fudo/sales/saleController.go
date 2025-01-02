@@ -31,12 +31,32 @@ func (e *SaleController) GetSales(c *gin.Context) {
 	})
 }
 
-func (e *SaleController) GetSalesByDate(c *gin.Context) {
+func (e *SaleController) GetSalesByMonth(c *gin.Context) {
 	date := c.Param("date")
 
 	saleRepository := SaleRepository{}
 
-	sales, err := saleRepository.FetchSalesByDate(date)
+	sales, err := saleRepository.FetchSalesByMonth(date)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get sales",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"sales": sales,
+	})
+
+}
+
+func (e *SaleController) GetSalesByDay(c *gin.Context) {
+	date := c.Param("date")
+
+	saleRepository := SaleRepository{}
+
+	sales, err := saleRepository.FetchSalesByDay(date)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get sales",
