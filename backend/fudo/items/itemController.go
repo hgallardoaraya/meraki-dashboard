@@ -7,10 +7,10 @@ import (
 
 type ItemController struct {}
 
-func (e *ItemController) GetSales(c *gin.Context) {
+func (e *ItemController) GetItems(c *gin.Context) {
 	itemRepository := ItemRepository{}
 
-	sales , err := itemRepository.FetchAllProducts()
+	sales , err := itemRepository.FetchAllItems()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get products",

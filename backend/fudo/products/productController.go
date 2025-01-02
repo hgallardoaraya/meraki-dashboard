@@ -7,7 +7,7 @@ import (
 
 type ProductController struct {}
 
-func (e *ProductController) GetSales(c *gin.Context) {
+func (e *ProductController) GetProducts(c *gin.Context) {
 	productRepository := ProductRepository{}
 
 	sales , err := productRepository.FetchAllProducts()

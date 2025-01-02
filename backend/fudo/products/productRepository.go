@@ -7,9 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
-type SellsRequest struct {
+type ProductRequest struct {
 	Authorization string `json:"Authorization"`
 	CreatedAt     string `json:"createdAt"` //Pattern: ^gte.\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z)? gte.2020-05-11T23:15:00Z
 	SaleType      string `json:"saleType"`  //Allowed: eq.EAT-IN┃eq.TAKEAWAY
@@ -25,14 +26,14 @@ type SellsRequest struct {
 type ProductRepository struct{}
 
 func (s *ProductRepository) FetchAllProducts() ([]Product, error) {
-	var apiResponse APIResponse
+	var apiResponse APIResponseList
 	apiURL := os.Getenv("FUDO_API_URL")
 	token, err := h.GetFudoToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get token: %w", err)
 	}
 
-	req, err := http.NewRequest("GET", apiURL, nil)
+	req, err := http.NewRequest("GET", apiURL+ "/products", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -54,11 +55,15 @@ func (s *ProductRepository) FetchAllProducts() ([]Product, error) {
 
 	products := []Product{}
 
+	
+
 	for index, data := range apiResponse.Data {
+		id, _ := strconv.Atoi(apiResponse.Data[index].ID)
+
 		product := Product{
-			ID:      apiResponse.Data[index].ID,
-			Name:    data.Attributes.Name,
-			Price:   data.Attributes.Price,
+			ID:    id,
+			Name:  data.Attributes.Name,
+			Price: int(data.Attributes.Price),
 		}
 
 		products = append(products, product)
@@ -66,4 +71,43 @@ func (s *ProductRepository) FetchAllProducts() ([]Product, error) {
 
 	return products, nil
 
+}
+
+func (s *ProductRepository) FetchProductByID(id int) (Product, error) {
+	var apiResponse APIResponse
+	apiURL := os.Getenv("FUDO_API_URL")
+	token, err := h.GetFudoToken()
+	if err != nil {
+		return Product{}, fmt.Errorf("failed to get token: %w", err)
+	}
+
+	req, err := http.NewRequest("GET", apiURL +"/products/"+ strconv.Itoa(id), nil)
+	if err != nil {
+		return Product{}, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("The request could not be made: %v", err)
+		return Product{}, fmt.Errorf("failed to make request: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	if err := json.NewDecoder(resp.Body).Decode(&apiResponse); err != nil {
+		return Product{}, fmt.Errorf("failed to decode product: %w", err)
+	}
+
+	id, _= strconv.Atoi(apiResponse.Data.ID)
+
+	product := Product{
+		ID:    id,
+		Name:  apiResponse.Data.Attributes.Name,
+		Price: int(apiResponse.Data.Attributes.Price),
+	}
+
+	return product, nil
 }

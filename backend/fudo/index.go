@@ -3,6 +3,8 @@ package fudo
 import (
 	"github.com/gin-gonic/gin"
 
+	"dashboard/fudo/products"
+	"dashboard/fudo/items"
 	"dashboard/fudo/sales"
 )
 
@@ -11,5 +13,7 @@ func FudoRouter(r *gin.RouterGroup) {
 	fudoRouter := r.Group("/fudo")
 	{
 		sales.SaleRouter(fudoRouter)
+		items.ItemRouter(fudoRouter)
+		products.ProductRouter(fudoRouter)
 	}
 }

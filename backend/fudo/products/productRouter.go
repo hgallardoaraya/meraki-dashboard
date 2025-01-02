@@ -7,9 +7,9 @@ import (
 func ProductRouter(r *gin.RouterGroup) {
 	productController := new(ProductController)
 
-	productRoutes := r.Group("fudo/products")
+	productRoutes := r.Group("/products")
 	{
-		productRoutes.GET("/", productController.GetSales)
+		productRoutes.GET("/", productController.GetProducts)
 		// saleRoutes.GET("/:id", saleController.GetRoleByID)
 	}
 }
