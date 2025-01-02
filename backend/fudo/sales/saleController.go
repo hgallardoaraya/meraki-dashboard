@@ -3,20 +3,21 @@ package sales
 import (
 	"net/http"
 
-	i "dashboard/fudo/items"
-	p "dashboard/fudo/products"
-
 	"github.com/gin-gonic/gin"
 )
 
-type SaleController struct {}
+type SaleController struct{}
 
 func (e *SaleController) GetSales(c *gin.Context) {
-	saleRepository := SaleRepository{}
-	productRepository := p.ProductRepository{}
-	itemRepository := i.ItemRepository{}
+	page := c.Query("page")
 
-	sales , err := saleRepository.FetchAllSales()
+	if page == "" {
+		page = "1"
+	}
+
+	saleRepository := SaleRepository{}
+
+	sales, err := saleRepository.FetchAllSales(page)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Failed to get sales",
@@ -25,27 +26,27 @@ func (e *SaleController) GetSales(c *gin.Context) {
 		return
 	}
 
-	items, err := itemRepository.FetchAllItems()
+	c.JSON(http.StatusOK, gin.H{
+		"sales": sales,
+	})
+}
+
+func (e *SaleController) GetSalesByDate(c *gin.Context) {
+	date := c.Param("date")
+
+	saleRepository := SaleRepository{}
+
+	sales, err := saleRepository.FetchSalesByDate(date)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get items",
+			"message": "Failed to get sales",
 			"error":   err.Error(),
 		})
 		return
 	}
-
-	products, err := productRepository.FetchAllProducts()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Failed to get products",
-			"error":   err.Error(),
-		})
-		return
-	}
-
-	salesResponse := mixer(sales, items, products)
 
 	c.JSON(http.StatusOK, gin.H{
-		"sales": salesResponse,
+		"sales": sales,
 	})
+
 }

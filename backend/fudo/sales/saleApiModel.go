@@ -19,7 +19,7 @@ type Attributes struct {
 	ClosedAt     *string  `json:"closedAt"`
 	Comment      *string `json:"comment"`
 	CreatedAt    string  `json:"createdAt"`
-	People       int     `json:"people"`
+	People       *int     `json:"people"`
 	CustomerName *string `json:"customerName"`
 	Total        float64 `json:"total"`
 	SaleType     string  `json:"saleType"`

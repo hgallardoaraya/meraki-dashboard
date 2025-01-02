@@ -10,6 +10,6 @@ func SaleRouter(r *gin.RouterGroup) {
 	saleRoutes := r.Group("/sales")
 	{
 		saleRoutes.GET("/", saleController.GetSales)
-		// saleRoutes.GET("/:id", saleController.GetRoleByID)
+		saleRoutes.GET("/:date", saleController.GetSalesByDate)
 	}
 }
