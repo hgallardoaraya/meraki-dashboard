@@ -49,7 +49,7 @@ func main() {
 		routes.LocaleRouter(api)
 		routes.ProviderRouter(api)
 
-		fudo.SaleRouter(api)
+		fudo.FudoRouter(api)
 
 	}
 

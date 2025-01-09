@@ -132,3 +132,75 @@ func (e *BillRepository) DeleteBill(id int) error {
 
 	return nil
 }
+
+func (e *BillRepository) GetBillsByProvider(provider string) ([]r.Bill, error) {
+	db := database.GetDB()
+	query := fmt.Sprintf(`SELECT b.id, p.name, 
+	    u.name, u.last_name, 
+	    l.name, 
+	    bc.name, 
+	    bt.name, 
+	    creation_date, contable_date, total_neto, total_iva, total_amount, notes, image 
+		FROM %s b
+		INNER JOIN %s p ON p.id = b.provider_id
+		INNER JOIN %s u ON u.id = b.user_id
+		INNER JOIN %s l ON l.id = b.locale_id
+		INNER JOIN %s bc ON bc.id = b.category_id
+		INNER JOIN %s bt ON bt.id = b.bill_type_id	
+		WHERE p.id = %s;`,
+		tableBill, tableProvider, tableUser, tableLocale, tableBillCategory, tableBillType, provider)
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var bills []r.Bill
+	for rows.Next() {
+		var bill r.Bill
+		err := rows.Scan(&bill.ID, &bill.ProviderName, &bill.UserName, &bill.UserLastName, &bill.LocaleName, &bill.CategoryName,
+			&bill.TypeName, &bill.CreationDate, &bill.ContableDate, &bill.TotalNeto, &bill.TotalIva, &bill.TotalAmount,
+			&bill.Notes, &bill.Image)
+		if err != nil {
+			return nil, err
+		}
+		bills = append(bills, bill)
+	}
+
+	return bills, nil
+}
+
+func (e *BillRepository) GetBillsByCategory(category string) ([]r.Bill, error) {
+	db := database.GetDB()
+	query := fmt.Sprintf(`SELECT b.id, p.name, 
+	    u.name, u.last_name, 
+	    l.name, 
+	    bc.name, 
+	    bt.name, 
+	    creation_date, contable_date, total_neto, total_iva, total_amount, notes, image 
+		FROM %s b
+		INNER JOIN %s p ON p.id = b.provider_id
+		INNER JOIN %s u ON u.id = b.user_id
+		INNER JOIN %s l ON l.id = b.locale_id
+		INNER JOIN %s bc ON bc.id = b.category_id
+		INNER JOIN %s bt ON bt.id = b.bill_type_id		
+		WHERE bc.id = %s;`,
+		tableBill, tableProvider, tableUser, tableLocale, tableBillCategory, tableBillType, category)
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var bills []r.Bill
+	for rows.Next() {
+		var bill r.Bill
+		err := rows.Scan(&bill.ID, &bill.ProviderName, &bill.UserName, &bill.UserLastName, &bill.LocaleName, &bill.CategoryName,
+			&bill.TypeName, &bill.CreationDate, &bill.ContableDate, &bill.TotalNeto, &bill.TotalIva, &bill.TotalAmount,
+			&bill.Notes, &bill.Image)
+		if err != nil {
+			return nil, err
+		}
+		bills = append(bills, bill)
+	}
+
+	return bills, nil
+}
