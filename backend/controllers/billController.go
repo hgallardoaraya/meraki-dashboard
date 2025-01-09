@@ -63,6 +63,14 @@ func (e *BillController) CreateBill(c *gin.Context) {
 		return
 	}
 	bill, err := helpers.GetBillFromMultipartForm(form)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to get bill",
+			"error":   err.Error(),
+		})
+		return
+	}
+
 	files := form.File["files"]
 	err = helpers.SaveFiles(files, c.SaveUploadedFile)
 	if err != nil {
@@ -141,5 +149,72 @@ func (e *BillController) DeleteBill(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Bill deleted",
+	})
+}
+
+func (e *BillController) GetTotalBill(c *gin.Context) {
+	bills, err := billRepository.GetBills()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get bills",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var total int
+
+	for _, bill := range bills {
+		total += bill.TotalAmount
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"total": total,
+	})
+}
+
+func (e *BillController) GetTotalBillByProvider(c *gin.Context) {
+	provider := c.Param("provider_id")
+
+	bills, err := billRepository.GetBillsByProvider(provider)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get bills",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var total int
+
+	for _, bill := range bills {
+		total += bill.TotalAmount
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"total": total,
+	})
+}
+
+func (e *BillController) GetTotalBillByCategory(c *gin.Context) {
+	category := c.Param("category_id")
+
+	bills, err := billRepository.GetBillsByCategory(category)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to get bills",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	var total int
+
+	for _, bill := range bills {
+		total += bill.TotalAmount
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"total": total,
 	})
 }

@@ -15,7 +15,6 @@ var userRepository r.UserRepository = r.UserRepository{}
 var JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY")
 
 func LoginService(loginRequest LoginRequest) (string, error) {
-	h.GetSells()
 
 	user, err := userRepository.GetUserByUsername(loginRequest.Username)
 
@@ -41,7 +40,7 @@ func LoginService(loginRequest LoginRequest) (string, error) {
 		return token, nil
 	}
 
-	return "Failed to login", errors.New("Invalid Credentials")
+	return "Failed to login", errors.New("invalid credentials")
 }
 
 func RegisterService(registerRequest RegisterRequest) (string, error) {
