@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dashboard/controllers"
+	"dashboard/middlewares"
 )
 
 func BillCategoryRouter(r *gin.RouterGroup) {
@@ -13,8 +14,8 @@ func BillCategoryRouter(r *gin.RouterGroup) {
 	{
 		billCategoriesRoutes.GET("/", billCategoryController.GetBillCategories)
 		billCategoriesRoutes.GET("/:id", billCategoryController.GetBillCategoryByID)
-		billCategoriesRoutes.POST("/", billCategoryController.CreateBillCategory)
-		billCategoriesRoutes.PUT("/:id", billCategoryController.UpdateBillCategory)
-		billCategoriesRoutes.DELETE("/:id", billCategoryController.DeleteBillCategory)
+		billCategoriesRoutes.POST("/", middlewares.CheckAdminRole(), billCategoryController.CreateBillCategory)
+		billCategoriesRoutes.PUT("/:id", middlewares.CheckAdminRole(), billCategoryController.UpdateBillCategory)
+		billCategoriesRoutes.DELETE("/:id", middlewares.CheckAdminRole(), billCategoryController.DeleteBillCategory)
 	}
 }
