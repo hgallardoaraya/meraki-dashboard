@@ -12,8 +12,8 @@ import (
 
 	auth "dashboard/auth"
 	"dashboard/database"
-	routes "dashboard/routes"
 	fudo "dashboard/fudo"
+	routes "dashboard/routes"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	database.Conn()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // Cambia los dominios según tu necesidad
+		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
@@ -54,13 +54,13 @@ func main() {
 	}
 
 	ServerPort := os.Getenv("SERVER_PORT")
-	
+
 	if len(ServerPort) == 0 {
 		ServerPort = "8081"
 	}
 
 	// Start the server
-	
+
 	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}
