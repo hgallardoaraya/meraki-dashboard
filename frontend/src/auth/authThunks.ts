@@ -25,9 +25,9 @@ export const login = createAsyncThunk('login', async (credentials:{username: str
       }
     }
     dispatch(setLoggedIn(true));
-  } catch (error:any) {
-    console.log(error.response.data.error)
-    dispatch(setError(error.response.data.error));
+  } catch (error:any) {    
+    dispatch(setError(error.response.data.error));  
+    return Promise.reject("error al iniciar sesión"); // Devuelve el error para ser capturado en el componente
   } finally {
     dispatch(setLoading(false));
   }

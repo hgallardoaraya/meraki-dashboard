@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type AuthState = {
+  id?: number,
   isLoggedIn: boolean,
   role: string,
   username: string,

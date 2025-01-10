@@ -39,7 +39,10 @@ export type BillWithDetailsTextDates = Omit<BillWithDetails, 'creation_date' | '
 };
 
 
-export type NewBill = Omit<Bill, "id">;
+export type NewBill = Omit<Bill, "id" | "creation_date" | "contable_date"> & {
+  creation_date: string;
+  contable_date: string;
+};
 
 export type Locale = {
   id: number;
@@ -71,4 +74,9 @@ export type NewType = Omit<Category, "id">
 export interface ErrorState {
   globalError: string | null;
   createError: string | null;
+}
+
+export type BillsSummary = {
+  total_bills: number, 
+  total_amount: number, 
 }

@@ -3,25 +3,23 @@ import ToggleSidebar from "./toggle-sidebar";
 import React, { useState } from "react";
 import logoMeraki from "@/assets/meraki-logo.png" // ruta relativa al archivo
 import { useLocation } from "react-router-dom";
-import HomeIcon from "./home-icon";
 import BillsIcon from "./bills-icon";
 import StatisticIcon from "./statistics-icon";
 import { RouteItem } from "@/types/sidebar";
 import MaintainerIcon from "./maintainer-icon";
 import SalesIcon from "./sales-icon";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { AuthState, logout } from "@/auth/authSlice";
-import { Button } from "../ui/button";
 import LogoutIcon from "./logout-icon";
 import { useAppDispatch } from "@/store";
 
 const routeItems:RouteItem[] = [
   {
     path: "/",
-    name: "Inicio",
-    icon: <HomeIcon/>,
-    hasNestedRoutes: false,    
-    roles: ["ADMIN"],
+    name: "Estadísticas",
+    icon: <StatisticIcon/>,
+    hasNestedRoutes: false,
+    roles: ["ADMIN"]
   },
   {
     path: "/gastos",
@@ -84,13 +82,6 @@ const routeItems:RouteItem[] = [
     hasNestedRoutes: false,
     roles: ["ADMIN"],
   },
-  {
-    path: "/estadisticas",
-    name: "Estadísticas",
-    icon: <StatisticIcon/>,
-    hasNestedRoutes: false,
-    roles: ["ADMIN"]
-  },
 ]
 
 const Sidebar = () => {
@@ -134,7 +125,7 @@ const Sidebar = () => {
       { 
         isLoggedIn
         &&
-        <div className={`h-screen flex flex-col justify-between border-r p-4 shadow-md ${isSidebarOpen ? 'items-start w-240px' : 'items-center w-fit'}`}>      
+        <div className={`sticky top-0 left-0 h-screen flex flex-col justify-between border-r p-4 shadow-md ${isSidebarOpen ? 'items-start w-240px' : 'items-center w-fit'}`}>      
           <div className="flex flex-col justify-between h-full w-full mb-6">
             <div className="flex flex-col gap-6 w-full">
               <div className="w-full px-4">

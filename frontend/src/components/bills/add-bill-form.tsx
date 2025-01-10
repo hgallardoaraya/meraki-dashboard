@@ -32,6 +32,8 @@ import useFetchLocales from "./use-fetch-locales"
 import useFetchProviders from "./use-fetch-providers"
 import useFetchCategories from "./use-fetch-categories"
 import useFetchTypes from "./use-fetch-types"
+import { useSelector } from "react-redux"
+import { AuthState } from "@/auth/authSlice"
 
 // Tamaño máximo de archivo de 5 MB.
 const MAX_FILE_SIZE = 5000000;
@@ -102,6 +104,8 @@ const FormSchema = z.object({
   .optional()
 })
 
+// const {  } = useSelector((state: { auth: AuthState }) => state.auth);  
+
 export function AddBillForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -126,8 +130,8 @@ export function AddBillForm() {
       total_amount: data.total_amount,
       total_neto: data.total_neto,
       notes: data.notes,
-      creation_date: data.creation_date,
-      contable_date: data.contable_date,
+      creation_date: data.creation_date.toISOString(),
+      contable_date: data.contable_date.toISOString(),
       dte_id: 1,
       user_id: 1,
       image: "image.png",

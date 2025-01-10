@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Layout from './components/layout';
 import AddBillPage from './pages/add-bill-page';
 import StatisticsPage from './pages/statistics-page';
-import HomePage from './pages/home-page';
 import BillListPage from './pages/bill-list-page';
 import LocalesMaintainerPage from './pages/locales-maintainer-page';
 import CategoriesMaintainerPage from './pages/categories-maintainer-page';
@@ -22,8 +21,9 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <Router>
           <Layout>
-            <Routes>
-            <Route path="/" element={<ProtectedRoute allowedRoles={['ADMIN']}><HomePage /></ProtectedRoute>} />
+            <Routes>            
+            {/* ESTADISTICAS */}
+            <Route path="/" element={<ProtectedRoute allowedRoles={['ADMIN']}><StatisticsPage /></ProtectedRoute>} />
             {/* GASTOS */}
             <Route path="/gastos/ingresar" element={<ProtectedRoute allowedRoles={['ADMIN']}><AddBillPage /></ProtectedRoute>} />
             <Route path="/gastos/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><BillListPage /></ProtectedRoute>} />
@@ -33,9 +33,7 @@ function App() {
             <Route path="/mantenedores/categorias" element={<ProtectedRoute allowedRoles={['ADMIN']}><CategoriesMaintainerPage /></ProtectedRoute>} />
             <Route path="/mantenedores/tipos" element={<ProtectedRoute allowedRoles={['ADMIN']}><TypesMaintainerPage /></ProtectedRoute>} />
             {/* VENTAS */}
-            <Route path="/ventas/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><SaleListPage /></ProtectedRoute>} />            
-            {/* ESTADISTICAS */}
-            <Route path="/estadisticas" element={<ProtectedRoute allowedRoles={['ADMIN']}><StatisticsPage /></ProtectedRoute>} />
+            <Route path="/ventas/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><SaleListPage /></ProtectedRoute>} />                        
             {/* LOGIN */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />

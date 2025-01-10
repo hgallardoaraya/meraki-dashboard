@@ -83,7 +83,7 @@ const columns: ColumnDef<BillWithDetails>[] = [
           className="flex justify-start !p-0 w-full"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha creación
+          F. creación
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -99,7 +99,7 @@ const columns: ColumnDef<BillWithDetails>[] = [
           className="flex justify-start !p-0 w-full"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha contable
+          F. contable
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
@@ -166,7 +166,7 @@ const BillListTable = () => {
 
   return (
     <div className="w-full">      
-      <DataTable columns={columns} data={bills}/>
+      <DataTable columns={columns} data={bills} enableGlobalSearch={true}/>
     </div>
   );
 };

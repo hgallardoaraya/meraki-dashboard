@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import Swal from 'sweetalert2'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -49,12 +50,25 @@ export function LoginForm() {
       localStorage.setItem("username", data.username)
     }
     try{
-      await dispatch(login({username: data.username, password: data.password}));    
-      navigate("/")
-    } catch (error: any) {
-      console.log(error);
-    }    
-
+      const resultAction = await dispatch(login({ username: data.username, password: data.password }));
+      if (login.rejected.match(resultAction)) {
+        // Manejar el error si la acción fue rechazada
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Credenciales inválidas", // Mostrar el mensaje de error
+        });
+      } else {
+        navigate("/");
+      }  
+    } catch(error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Credenciales inválidas",        
+      });
+    }
+  
   };
 
   const chooseEye = () => {
