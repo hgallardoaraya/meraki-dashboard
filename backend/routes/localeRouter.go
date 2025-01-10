@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dashboard/controllers"
+	"dashboard/middlewares"
 )
 
 func LocaleRouter(r *gin.RouterGroup) {
@@ -13,8 +14,8 @@ func LocaleRouter(r *gin.RouterGroup) {
 	{
 		localeRoutes.GET("/", localeController.GetLocales)
 		localeRoutes.GET("/:id", localeController.GetLocaleByID)
-		localeRoutes.POST("/", localeController.CreateLocale)
-		localeRoutes.PUT("/:id", localeController.UpdateLocale)
-		localeRoutes.DELETE("/:id", localeController.DeleteLocale)
+		localeRoutes.POST("/", middlewares.CheckAdminRole(), localeController.CreateLocale)
+		localeRoutes.PUT("/:id", middlewares.CheckAdminRole(), localeController.UpdateLocale)
+		localeRoutes.DELETE("/:id", middlewares.CheckAdminRole(), localeController.DeleteLocale)
 	}
 }

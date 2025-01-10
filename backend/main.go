@@ -1,7 +1,6 @@
 package main
 
 import (
-	middleware "dashboard/middlewares"
 	"fmt"
 	"os"
 
@@ -12,8 +11,9 @@ import (
 
 	auth "dashboard/auth"
 	"dashboard/database"
-	routes "dashboard/routes"
 	fudo "dashboard/fudo"
+	middleware "dashboard/middlewares"
+	routes "dashboard/routes"
 )
 
 func main() {
@@ -34,10 +34,10 @@ func main() {
 	{
 		auth.AuthRouter(api)
 
-		env := os.Getenv("ENV")
-		if env == "prod" {
-			api.Use(middleware.AuthMiddleware())
-		}
+		//env := os.Getenv("ENV")
+		//if env == "prod" {
+		api.Use(middleware.AuthMiddleware())
+		//}
 
 		routes.UserRouter(api)
 		routes.RoleRouter(api)
@@ -54,13 +54,13 @@ func main() {
 	}
 
 	ServerPort := os.Getenv("SERVER_PORT")
-	
+
 	if len(ServerPort) == 0 {
-		ServerPort = "8081"
+		ServerPort = "8080"
 	}
 
 	// Start the server
-	
+
 	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dashboard/controllers"
+	"dashboard/middlewares"
 )
 
 func UserRouter(r *gin.RouterGroup) {
@@ -13,8 +14,7 @@ func UserRouter(r *gin.RouterGroup) {
 	{
 		userRoutes.GET("/", userController.GetUsers)
 		userRoutes.GET("/:id", userController.GetUserByID)
-		userRoutes.POST("/", userController.CreateUser)
-		userRoutes.PUT("/:id", userController.UpdateUser)
-		userRoutes.DELETE("/:id", userController.DeleteUser)
+		userRoutes.PUT("/:id", middlewares.CheckAdminRole(), userController.UpdateUser)
+		userRoutes.DELETE("/:id", middlewares.CheckAdminRole(), userController.DeleteUser)
 	}
 }

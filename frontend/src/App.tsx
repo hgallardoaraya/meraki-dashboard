@@ -15,6 +15,7 @@ import { Provider } from 'react-redux';
 import { store, persistor } from './store';
 import { PersistGate } from 'redux-persist/integration/react';
 import SaleListPage from './pages/sale-list-page';
+import UsersMaintainerPage from './pages/users-maintainer-page';
 
 function App() {
   return (
@@ -23,22 +24,23 @@ function App() {
         <Router>
           <Layout>
             <Routes>
-            <Route path="/" element={<ProtectedRoute allowedRoles={['ADMIN']}><HomePage /></ProtectedRoute>} />
-            {/* GASTOS */}
-            <Route path="/gastos/ingresar" element={<ProtectedRoute allowedRoles={['ADMIN']}><AddBillPage /></ProtectedRoute>} />
-            <Route path="/gastos/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><BillListPage /></ProtectedRoute>} />
-            {/* MANTENEDORES */}
-            <Route path="/mantenedores/proveedores" element={<ProtectedRoute allowedRoles={['ADMIN']}><ProvidersMaintainerPage /></ProtectedRoute>} />
-            <Route path="/mantenedores/locales" element={<ProtectedRoute allowedRoles={['ADMIN']}><LocalesMaintainerPage /></ProtectedRoute>} />
-            <Route path="/mantenedores/categorias" element={<ProtectedRoute allowedRoles={['ADMIN']}><CategoriesMaintainerPage /></ProtectedRoute>} />
-            <Route path="/mantenedores/tipos" element={<ProtectedRoute allowedRoles={['ADMIN']}><TypesMaintainerPage /></ProtectedRoute>} />
-            {/* VENTAS */}
-            <Route path="/ventas/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><SaleListPage /></ProtectedRoute>} />            
-            {/* ESTADISTICAS */}
-            <Route path="/estadisticas" element={<ProtectedRoute allowedRoles={['ADMIN']}><StatisticsPage /></ProtectedRoute>} />
-            {/* LOGIN */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+              <Route path="/" element={<ProtectedRoute allowedRoles={['ADMIN']}><HomePage /></ProtectedRoute>} />
+              {/* GASTOS */}
+              <Route path="/gastos/ingresar" element={<ProtectedRoute allowedRoles={['ADMIN']}><AddBillPage /></ProtectedRoute>} />
+              <Route path="/gastos/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><BillListPage /></ProtectedRoute>} />
+              {/* MANTENEDORES */}
+              <Route path="/mantenedores/proveedores" element={<ProtectedRoute allowedRoles={['ADMIN']}><ProvidersMaintainerPage /></ProtectedRoute>} />
+              <Route path="/mantenedores/locales" element={<ProtectedRoute allowedRoles={['ADMIN']}><LocalesMaintainerPage /></ProtectedRoute>} />
+              <Route path="/mantenedores/categorias" element={<ProtectedRoute allowedRoles={['ADMIN']}><CategoriesMaintainerPage /></ProtectedRoute>} />
+              <Route path="/mantenedores/tipos" element={<ProtectedRoute allowedRoles={['ADMIN']}><TypesMaintainerPage /></ProtectedRoute>} />
+              <Route path="/mantenedores/usuarios" element={<ProtectedRoute allowedRoles={['ADMIN']}><UsersMaintainerPage /></ProtectedRoute>} />
+              {/* VENTAS */}
+              <Route path="/ventas/listar" element={<ProtectedRoute allowedRoles={['ADMIN']}><SaleListPage /></ProtectedRoute>} />
+              {/* ESTADISTICAS */}
+              <Route path="/estadisticas" element={<ProtectedRoute allowedRoles={['ADMIN']}><StatisticsPage /></ProtectedRoute>} />
+              {/* LOGIN */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
             </Routes>
           </Layout>
         </Router>

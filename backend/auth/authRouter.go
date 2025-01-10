@@ -1,6 +1,8 @@
 package auth
 
 import (
+	middleware "dashboard/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,6 +12,6 @@ func AuthRouter(r *gin.RouterGroup) {
 	authRoutes := r.Group("/auth")
 	{
 		authRoutes.POST("/login", authController.Login)
-		authRoutes.POST("/register", authController.Register)
+		authRoutes.POST("/register", middleware.AuthMiddleware(), authController.Register)
 	}
 }
