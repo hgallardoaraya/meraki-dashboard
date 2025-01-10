@@ -34,10 +34,10 @@ func main() {
 	{
 		auth.AuthRouter(api)
 
-		//env := os.Getenv("ENV")
-		//if env == "prod" {
-		api.Use(middleware.AuthMiddleware())
-		//}
+		env := os.Getenv("ENV")
+		if env == "prod" {
+			api.Use(middleware.AuthMiddleware())
+		}
 
 		routes.UserRouter(api)
 		routes.RoleRouter(api)

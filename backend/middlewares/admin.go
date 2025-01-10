@@ -19,7 +19,7 @@ func CheckAdminRole() gin.HandlerFunc {
 		userClaims := claims.(jwt.MapClaims)
 
 		role, ok := userClaims["role"].(string)
-		if !ok || role != "admin" {
+		if !ok || role != "ADMIN" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
 			c.Abort()
 			return

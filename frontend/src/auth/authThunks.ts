@@ -14,7 +14,8 @@ export const login = createAsyncThunk('login', async (credentials:{username: str
   try {
     const response = await axios.post('http://localhost:8080/api/auth/login', credentials);
     const token = response.data.token;
-    dispatch(setToken(token));   
+    dispatch(setToken(token));  
+    localStorage.setItem("token", token); 
     const payload = decodeToken(token);
     if(payload) {
       if("username" in payload) {

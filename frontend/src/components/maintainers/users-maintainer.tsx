@@ -121,7 +121,9 @@ const UsersMaintainer = () => {
             locale_id: data.locale_id
         };
 
-        await createUser(newUser);
+        console.log(newUser);
+
+        await register(newUser);
         form.reset(defaultValues);
         setUserLastOp("C");
         setSubmitted(true);
@@ -150,7 +152,7 @@ const UsersMaintainer = () => {
     };
 
     const {
-        createUser,
+        register,
         deleteUser,
         updateUser,
         loading: userCrudLoading,

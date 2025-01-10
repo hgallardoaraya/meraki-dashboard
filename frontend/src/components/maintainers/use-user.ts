@@ -15,11 +15,17 @@ const useUser = (): UseUserReturn => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
+    const token = localStorage.getItem("token");
+
     const register = async (newUser: NewUser): Promise<void> => {
         try {
             setLoading(true);
             setError(null);
-            await axios.post("http://localhost:8080/api/auth/register/", newUser);
+            await axios.post("http://localhost:8080/api/auth/register/", newUser, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
         } catch (error: any) {
             const message = error.response?.data?.message || "Error al registrar usuario";
             setError(message);
@@ -32,7 +38,11 @@ const useUser = (): UseUserReturn => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get("http://localhost:8080/api/users/");
+            const response = await axios.get("http://localhost:8080/api/users/", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             return response.data;
         } catch (error: any) {
             const message = error.response?.data?.message || "Error al obtener usuarios";
@@ -47,7 +57,11 @@ const useUser = (): UseUserReturn => {
         try {
             setLoading(true);
             setError(null);
-            await axios.put(`http://localhost:8080/api/users/${user.id}`, user);
+            await axios.put(`http://localhost:8080/api/users/${user.id}`, user, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
         } catch (error: any) {
             const message = error.response?.data?.message || "Error al actualizar usuario";
             setError(message);
@@ -60,7 +74,11 @@ const useUser = (): UseUserReturn => {
         try {
             setLoading(true);
             setError(null);
-            await axios.delete(`http://localhost:8080/api/users/${id}`);
+            await axios.delete(`http://localhost:8080/api/users/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
         } catch (error: any) {
             const message = error.response?.data?.message || "Error al eliminar usuario";
             setError(message);

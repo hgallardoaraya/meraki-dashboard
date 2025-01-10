@@ -50,15 +50,15 @@ func RegisterService(registerRequest RegisterRequest, c *gin.Context) (string, e
 	claims, exists := c.Get("claims")
 	if !exists {
 		c.Abort()
-		return "Failed to register", errors.New("No claims found")
+		return "Failed to register", errors.New("no claims found")
 	}
 
 	userClaims := claims.(jwt.MapClaims)
 
 	role, ok := userClaims["role"].(string)
-	if !ok || role != "admin" {
+	if !ok || role != "ADMIN" {
 		c.Abort()
-		return "Failed to register", errors.New("Insufficient permissions")
+		return "Failed to register", errors.New("insufficient permissions")
 	}
 
 	if _, err := userRepository.GetUserByUsername(registerRequest.Username); err == nil {

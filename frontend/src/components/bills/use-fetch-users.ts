@@ -22,7 +22,12 @@ const useFetchUsers = (): UseFetchUsersReturn => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get<AxiosGetUsers>("http://localhost:8080/api/users/");
+            const response = await axios.get<AxiosGetUsers>("http://localhost:8080/api/users/", 
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
             setUsers(response.data.users || []);
         } catch (err) {
             setError((err as Error).message || "Error al obtener los usuarios");
