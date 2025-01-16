@@ -30,18 +30,19 @@ interface DataTableProps<TData, TValue> {
   enableFetchSales?: Boolean;
   totalRecordsProp?: number;
   pageIndexFromParent?: number;
+  maxPageSize?: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   enableGlobalSearch = false,
-  fetchSales,
-  enableFetchSales = false,
+  fetchSales,  
   totalRecordsProp = -1,
   pageIndexFromParent,
+  maxPageSize = 10,
 }: DataTableProps<TData, TValue>) {
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(maxPageSize);
   const [totalRecords, setTotalRecords] = useState(data.length)
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState(""); // Estado para el filtro global
@@ -164,7 +165,7 @@ export function DataTable<TData, TValue>({
             </div>
           );
         })}
-        <Button variant="outline" size="sm" onClick={() => setCurrentPageIndex((prev) => prev + 1)} disabled={currentPageIndex === Math.ceil((totalRecords || 0) / pageSize) - 1}>
+        <Button variant="outline" size="sm" onClick={() => setCurrentPageIndex((prev) => prev + 1)} disabled={currentPageIndex === Math.ceil((totalRecords || 0) / pageSize)}>
           Siguiente
         </Button>
       </div>

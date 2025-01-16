@@ -11,7 +11,7 @@ import { BillsAndCategoriesByMonthLineChart } from "./bills-and-categories-by-mo
 
 const BillsAndCategories = () => {  
   
-  const [selectedPeriods, setSelectedPeriods] = useState<PeriodsRange | undefined>({startPeriod: {year: 2025, month: 1}, endPeriod: {year: -1, month: -1}});  
+  const [selectedPeriods, setSelectedPeriods] = useState<PeriodsRange | undefined>();  
   const [ selectedLocale, setSelectedLocale ] = useState<number>(-1);
   const { locales } = useFetchLocales();
   const [billsAndCategoriesDataByDay, setBillsAndCategoriesDataByDay] = useState<BillsAndCategoriesByDayLineChartData[]>([]);
@@ -24,11 +24,9 @@ const BillsAndCategories = () => {
     try {
       const response = await getDailyBillsAndCategoriesSummaryByMonthAndYear(year, month, localeId);
 
-      setMonthBillsAndCategoriesSummary(response);
-
       // Obtener el resumen diario
       const billsAndCategoriesDataByDay = getDaysInPeriod(month, year).map(day => {
-        const data = monthBillsAndCategoriesSummary.find(m => m.day === day);
+        const data = response.find(m => m.day === day);
         
         // Si hay datos para el día actual, transforma el objeto
         if (data) {
@@ -44,6 +42,7 @@ const BillsAndCategories = () => {
       });
   
       setBillsAndCategoriesDataByDay(billsAndCategoriesDataByDay);
+      setMonthBillsAndCategoriesSummary(response);
     } catch (error) {
       console.error(error);
     }
@@ -52,7 +51,6 @@ const BillsAndCategories = () => {
   const getMonthlySummaryByMonthAndYearRange = async (startMonth: number, startYear: number, endMonth: number, endYear: number, localeId: number) => {
     try {
       const response = await getDailyBillsAndCategoriesSummaryByMonthAndYearRange(startMonth, startYear, endMonth, endYear, localeId);
-      setPeriodBillsAndCategoriesSummary(response);
 
       // Obtener el resumen diario
       const billsAndCategoriesDataByMonth = getMonthsInPeriodRange(startMonth, startYear, endMonth, endYear).map(period => {
@@ -76,6 +74,7 @@ const BillsAndCategories = () => {
       });
   
       setBillsAndCategoriesDataByMonth(billsAndCategoriesDataByMonth);
+      setPeriodBillsAndCategoriesSummary(response);
     } catch (error) {
       console.error(error);
     }
@@ -92,22 +91,6 @@ const BillsAndCategories = () => {
   const getMonthlySummaryByMonthAndYearRangeWrapper = async (startMonth: number, startYear: number, endMonth: number, endYear: number, localeId: number) => {
     await getMonthlySummaryByMonthAndYearRange(startMonth, startYear, endMonth, endYear, localeId);
   }
-
-  useEffect(() => {
-    if(selectedPeriods !== undefined) {
-      getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
-    }
-  }, []);
-
-  useEffect(() => {        
-    if(selectedPeriods !== undefined) {
-      if(selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) {
-        getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
-      } else {
-        getMonthlySummaryByMonthAndYearRangeWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedPeriods?.endPeriod.month, selectedPeriods?.endPeriod.year, selectedLocale || -1)
-      }
-    }
-  }, [selectedPeriods, selectedLocale]); 
   
   useEffect(() => {
     const providerTotals = monthBillsAndCategoriesSummary.reduce((acc, { categories }) => {
@@ -149,30 +132,34 @@ const BillsAndCategories = () => {
 
   }, [periodBillsAndCategoriesSummary])
 
+  useEffect(() => {        
+    if(selectedPeriods !== undefined) {
+      if(selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) {
+        getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
+      } else {
+        getMonthlySummaryByMonthAndYearRangeWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedPeriods?.endPeriod.month, selectedPeriods?.endPeriod.year, selectedLocale || -1)
+      }
+    }
+  }, [selectedPeriods]); 
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-end mb-2">
         <h2 className="font-medium text-2xl text-gray-800">Resumen general - Gastos por categoria</h2>
         <div className="flex items-end gap-6">
-          <SelectStatsDates keyPrefix="billsAndSales" handleChange={handleStatsDatesChange}/>
-          {/* <Select value={selectedLocale?.toString() || ''} onValueChange={(value) => setSelectedLocale(parseInt(value))}>
-            <SelectTrigger className="w-fit">
-              <SelectValue placeholder="Seleccionar local" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectItem value="-1">TODOS</SelectItem>
-              {locales.map(l => (
-                <SelectItem key={"billsAndSales"+l.id} value={l.id.toString()}>{l.name}</SelectItem>
-              ))}                        
-            </SelectContent>
-          </Select> */}
+          <SelectStatsDates keyPrefix="billsAndCategories" handleChange={handleStatsDatesChange}/>          
         </div>
       </div>      
       {
         selectedPeriods && (selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) ? 
         (        
           <div className="bg-white w-full rounded-md border border-gray-100 p-2 h-fit shadow-sm flex flex-row gap-6">
-            <BillsAndCategoriesByDayLineChart data={billsAndCategoriesDataByDay}/>
+              {
+                billsAndCategoriesDataByDay.length > 0 ? 
+                <BillsAndCategoriesByDayLineChart data={billsAndCategoriesDataByDay}/>
+                :
+                <p>Loading</p>
+              }                        
             <BillsAndCategoriesTable data={billsAndCategoriesTableData}/>
           </div>                    
         )

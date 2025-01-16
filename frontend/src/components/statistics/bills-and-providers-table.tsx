@@ -62,7 +62,7 @@ const BillsAndProvidersTable: React.FC<BillsAndProvidersTableProps> = ({data}) =
 
   return (
     <div className="w-full">      
-      <DataTable columns={columns} data={data}/>
+      <DataTable columns={columns} data={data} maxPageSize={5}/>
     </div>
   );
 };

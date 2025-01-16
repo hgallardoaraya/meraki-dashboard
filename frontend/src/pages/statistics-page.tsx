@@ -2,10 +2,13 @@ import BillsAndCategories from "@/components/statistics/bills-and-categories";
 import BillsAndProviders from "@/components/statistics/bills-and-providers";
 import BillsAndSales from "@/components/statistics/bills-and-sales";
 import DayStats from "@/components/statistics/day-stats";
+import { getJWT } from "@/components/statistics/fudo-service";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Slash } from "lucide-react";
+import { useEffect } from "react";
 
 const StatisticsPage = () => {
+  
   return (
     <div className="flex flex-col gap-4">
       <Breadcrumb>

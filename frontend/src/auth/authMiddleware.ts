@@ -1,4 +1,4 @@
-const authMiddleware = (store:any) => (next:any) => (action:any) => {
+export const authMiddleware = (store:any) => (next:any) => (action:any) => {
   const state = store.getState();
   const authState = state.auth;
 
@@ -16,5 +16,3 @@ const authMiddleware = (store:any) => (next:any) => (action:any) => {
 
   return next(action);
 };
-
-export default authMiddleware;

@@ -132,14 +132,9 @@ const BillsAndSales = () => {
     await getMonthlySummaryByMonthAndYearRange(startMonth, startYear, endMonth, endYear, localeId);
   }
 
-  useEffect(() => {
-    if(selectedPeriods !== undefined) {
-      getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
-    }
-  }, []);
-
   useEffect(() => {        
     if(selectedPeriods !== undefined) {
+      console.log("bills and sales cambian periodos o local")
       if(selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) {
         getMonthSummary(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);    
         getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);

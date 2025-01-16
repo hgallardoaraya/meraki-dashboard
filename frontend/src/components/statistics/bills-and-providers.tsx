@@ -9,12 +9,13 @@ import { getDaysInPeriod, getMonthsInPeriodRange } from "@/helpers/lists";
 import { BillsAndProvidersByDayLineChart } from "./bills-and-providers-by-day-line-chart";
 import { BillsAndProvidersByMonthLineChart } from "./bills-and-providers-by-month-line-chart";
 import BillsAndProvidersTable from "./bills-and-providers-table";
+import { useLocation } from "react-router-dom";
 
-const BillsAndSales = () => {  
+const BillsAndProviders = () => {  
   
-  const [selectedPeriods, setSelectedPeriods] = useState<PeriodsRange | undefined>({startPeriod: {year: 2025, month: 1}, endPeriod: {year: -1, month: -1}});  
+  const [selectedPeriods, setSelectedPeriods] = useState<PeriodsRange | undefined>();  
   const [ selectedLocale, setSelectedLocale ] = useState<number>(-1);
-  const { locales } = useFetchLocales();
+  
   const [billsAndProvidersDataByDay, setBillsAndProvidersDataByDay] = useState<BillsAndProvidersByDayLineChartData[]>([]);
   const [billsAndProvidersDataByMonth, setBillsAndProvidersDataByMonth] = useState<BillsAndProvidersByMonthLineChartData[]>([]);
   const [billsAndProvidersTableData, setBillsAndProvidersTableData] = useState<BillsAndProvidersTableData[]>([]);
@@ -26,7 +27,7 @@ const BillsAndSales = () => {
       const response = await getDailyBillsAndProvidersSummaryByMonthAndYear(year, month, localeId);
       // Obtener el resumen diario
       const billsAndProvidersDataByDay = getDaysInPeriod(month, year).map(day => {
-        const data = monthBillsAndProvidersSummary.find(m => m.day === day);
+        const data = response.find(m => m.day === day);
         
         // Si hay datos para el día actual, transforma el objeto
         if (data) {
@@ -91,22 +92,6 @@ const BillsAndSales = () => {
   const getMonthlySummaryByMonthAndYearRangeWrapper = async (startMonth: number, startYear: number, endMonth: number, endYear: number, localeId: number) => {
     await getMonthlySummaryByMonthAndYearRange(startMonth, startYear, endMonth, endYear, localeId);
   }
-
-  useEffect(() => {
-    if(selectedPeriods !== undefined) {
-      getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
-    }
-  }, []);
-
-  useEffect(() => {        
-    if(selectedPeriods !== undefined) {
-      if(selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) {
-        getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
-      } else {
-        getMonthlySummaryByMonthAndYearRangeWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedPeriods?.endPeriod.month, selectedPeriods?.endPeriod.year, selectedLocale || -1)
-      }
-    }
-  }, [selectedPeriods]); 
   
   useEffect(() => {
     const providerTotals = monthBillsAndProvidersSummary.reduce((acc, { providers }) => {
@@ -148,31 +133,34 @@ const BillsAndSales = () => {
 
   }, [periodBillsAndProvidersSummary])
   
+  useEffect(() => {        
+    if(selectedPeriods !== undefined) {
+      if(selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) {
+        getDailySummaryByMonthAndYearWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedLocale || -1);
+      } else {
+        getMonthlySummaryByMonthAndYearRangeWrapper(selectedPeriods?.startPeriod.month, selectedPeriods?.startPeriod.year, selectedPeriods?.endPeriod.month, selectedPeriods?.endPeriod.year, selectedLocale || -1)
+      }
+    }
+  }, [selectedPeriods]); 
 
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-end mb-2">
         <h2 className="font-medium text-2xl text-gray-800">Resumen general - Gastos por proveedor</h2>
         <div className="flex items-end gap-6">
-          <SelectStatsDates keyPrefix="billsAndSales" handleChange={handleStatsDatesChange}/>
-          {/* <Select value={selectedLocale?.toString() || ''} onValueChange={(value) => setSelectedLocale(parseInt(value))}>
-            <SelectTrigger className="w-fit">
-              <SelectValue placeholder="Seleccionar local" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectItem value="-1">TODOS</SelectItem>
-              {locales.map(l => (
-                <SelectItem key={"billsAndSales"+l.id} value={l.id.toString()}>{l.name}</SelectItem>
-              ))}                        
-            </SelectContent>
-          </Select> */}
+          <SelectStatsDates keyPrefix="billsAndProviders" handleChange={handleStatsDatesChange}/>
         </div>
       </div>      
       {
         selectedPeriods && (selectedPeriods.endPeriod.month == -1 || selectedPeriods.endPeriod.year == -1) ? 
         (        
           <div className="bg-white w-full rounded-md border border-gray-100 p-2 h-fit shadow-sm flex flex-row gap-6">
-            <BillsAndProvidersByDayLineChart data={billsAndProvidersDataByDay}/>
+            {
+              billsAndProvidersDataByDay.length > 0 ? 
+              <BillsAndProvidersByDayLineChart data={billsAndProvidersDataByDay}/>
+              :
+              <p>Loading</p>
+            }            
             <BillsAndProvidersTable data={billsAndProvidersTableData}/>
           </div>                    
         )
@@ -188,4 +176,4 @@ const BillsAndSales = () => {
   )
 }
 
-export default BillsAndSales;
+export default BillsAndProviders;

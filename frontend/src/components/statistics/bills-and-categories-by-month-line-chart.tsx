@@ -35,8 +35,7 @@ export const BillsAndCategoriesByMonthLineChart: React.FC<BillsAndCategoriesLine
       data={formattedData} 
       index="period"
       categories={uniqueKeys.filter(key => key !== "year" && key !== "month")}  // Usamos las categorías formateadas      
-      valueFormatter={(number: number) => `${numberToCLP(number)} CLP`}
-      onValueChange={(v) => console.log(v)}
+      valueFormatter={(number: number) => `${numberToCLP(number)} CLP`}      
       xAxisLabel="Meses"
       yAxisLabel="CLP"
     />

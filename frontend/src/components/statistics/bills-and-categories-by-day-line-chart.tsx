@@ -10,12 +10,12 @@ type BillsAndCategoriesLineChartProps = {
 export const BillsAndCategoriesByDayLineChart: React.FC<BillsAndCategoriesLineChartProps> = ({ data }) => { 
   const [uniqueKeys, setUniqueKeys] = useState<string[]>([]);
 
-  useEffect(() => {
-    console.log(data);    
+  useEffect(() => {    
     const uk = [
       ...new Set(data.flatMap(obj => Object.keys(obj)))
     ];
     setUniqueKeys(uk)
+    console.log("cat data ", data);
   }, [data])
 
   return (
@@ -25,7 +25,6 @@ export const BillsAndCategoriesByDayLineChart: React.FC<BillsAndCategoriesLineCh
       index="day"
       categories={uniqueKeys.filter(key => key !== "day")}  // Usamos las categorías formateadas
       valueFormatter={(number: number) => `${numberToCLP(number)} CLP`}
-      onValueChange={(v) => console.log(v)}
       xAxisLabel="Días"
       yAxisLabel="CLP"
     />

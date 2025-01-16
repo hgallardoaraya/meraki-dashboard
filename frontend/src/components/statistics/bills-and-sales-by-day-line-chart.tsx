@@ -34,8 +34,7 @@ export const BillsAndSalesByDayLineChart: React.FC<BillsAndSalesLineChartProps> 
       data={formattedData}  // Usamos `formattedData` en lugar de `data`
       index="day"
       categories={formattedCategories}  // Usamos las categorías formateadas
-      valueFormatter={(number: number) => `${numberToCLP(number)} CLP`}
-      onValueChange={(v) => console.log(v)}
+      valueFormatter={(number: number) => `${numberToCLP(number)} CLP`}      
       xAxisLabel="Días"
       yAxisLabel="CLP"
     />

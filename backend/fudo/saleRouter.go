@@ -14,6 +14,8 @@ func SaleRouter(r *gin.RouterGroup) {
 		saleRoutes.GET("/summary", saleController.GetSummary)
 		saleRoutes.GET("/summary/month", saleController.GetSummaryByMonthAndYear)
 		saleRoutes.GET("/summary/monthRange", saleController.GetSummaryByMonthAndYearRange)
+		saleRoutes.POST("/fudo/link", saleController.LinkFudoAccount)
+		saleRoutes.POST("/proxy/authenticate", saleController.FudoAuthenticate)
 		// saleRoutes.GET("/:id", saleController.GetRoleByID)
 	}
 }

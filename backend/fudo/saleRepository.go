@@ -188,3 +188,93 @@ func (e *SaleRepository) GetDaySummariesByMonthAndYearRange(startMonth int, star
 
 	return periodSummaries, nil
 }
+
+func (e *SaleRepository) SaveFudoAccount(username string, password string) error {
+	db := database.GetDB()
+
+	encryptedPassword, err := helpers.EncryptPassword(password)
+	if err != nil {
+		return err
+	}
+
+	var fudoUsernameExists bool
+	verifyFields := "SELECT EXISTS(SELECT 1 FROM system_parameters WHERE field = 'fudo_username');"
+	if err = db.QueryRow(verifyFields, username).Scan(&fudoUsernameExists); err != nil {
+		return err
+	}
+	if !fudoUsernameExists {
+		createFields := "INSERT INTO system_parameters(field, value) VALUES ('fudo_username', ?)"
+		if _, err = db.Exec(createFields, username); err != nil {
+			return err
+		}
+	}
+
+	var fudoPasswordExists bool
+	verifyFields = "SELECT EXISTS(SELECT 1 FROM system_parameters WHERE field = 'fudo_password');"
+	if err = db.QueryRow(verifyFields, username).Scan(&fudoPasswordExists); err != nil {
+		return err
+	}
+	if !fudoPasswordExists {
+		createFields := "INSERT INTO system_parameters(field, value) VALUES ('fudo_password', ?)"
+		if _, err = db.Exec(createFields, encryptedPassword); err != nil {
+			return err
+		}
+	}
+
+	if fudoUsernameExists {
+		updateUsername := "UPDATE system_parameters SET value = ? WHERE field = 'fudo_username'"
+		if _, err = db.Exec(updateUsername, username); err != nil {
+			return err
+		}
+	}
+
+	if fudoPasswordExists {
+		updatePassword := "UPDATE system_parameters SET value = ? WHERE field = 'fudo_password'"
+		if _, err = db.Exec(updatePassword, encryptedPassword); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+type SystemParameter struct {
+	Field string
+	Value string
+}
+
+func (e *SaleRepository) GetFudoCredentials() (LinkCredentials, error) {
+	db := database.GetDB()
+
+	query := "SELECT field, value FROM system_parameters WHERE field = 'fudo_username' OR field = 'fudo_password';"
+	rows, err := db.Query(query)
+	if err != nil {
+		return LinkCredentials{}, nil
+	}
+
+	var params []SystemParameter
+	for rows.Next() {
+		var sysParam SystemParameter
+		errScan := rows.Scan(&sysParam.Field, &sysParam.Value)
+		if errScan != nil {
+			return LinkCredentials{}, errScan
+		}
+		params = append(params, sysParam)
+	}
+
+	var credentials LinkCredentials
+	for _, p := range params {
+		if p.Field == "fudo_username" {
+			credentials.Username = p.Value
+		} else if p.Field == "fudo_password" {
+			var desencryptedPassword string
+			desencryptedPassword, err = helpers.DecryptPassword(p.Value)
+			if err != nil {
+				return LinkCredentials{}, err
+			}
+			credentials.Password = desencryptedPassword
+		}
+	}
+
+	return credentials, nil
+}

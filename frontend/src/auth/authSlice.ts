@@ -8,6 +8,7 @@ type AuthState = {
   token: string | null,
   error: string | null,
   loading: boolean,
+  fudoToken: string | null,
 }
 
 const initialState:AuthState = {
@@ -17,6 +18,7 @@ const initialState:AuthState = {
   token: null,
   error: null,
   loading: false,
+  fudoToken: null,
 };
 
 export const authSlice = createSlice({
@@ -34,6 +36,9 @@ export const authSlice = createSlice({
     },
     setToken: (state:AuthState, action: PayloadAction<string | null>) => {
       state.token = action.payload;
+    },
+    setFudoToken: (state:AuthState, action: PayloadAction<string | null>) => {
+      state.fudoToken = action.payload;
     },
     setError: (state:AuthState, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -53,5 +58,5 @@ export const authSlice = createSlice({
 });
 
 export type { AuthState }
-export const { setToken, setRole, setUsername, setLoggedIn, setError, setLoading, logout } = authSlice.actions;
+export const { setToken, setRole, setUsername, setLoggedIn, setError, setLoading, logout, setFudoToken } = authSlice.actions;
 export default authSlice.reducer;

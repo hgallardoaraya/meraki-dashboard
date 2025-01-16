@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { AuthState, logout } from "@/auth/authSlice";
 import LogoutIcon from "./logout-icon";
 import { useAppDispatch } from "@/store";
+import SettingsIcon from "./settings-icon";
 
 const routeItems:RouteItem[] = [
   {
@@ -79,6 +80,13 @@ const routeItems:RouteItem[] = [
     path: "/ventas/listar",
     name: "Ventas",
     icon: <SalesIcon/>,
+    hasNestedRoutes: false,
+    roles: ["ADMIN"],
+  },
+  {
+    path: "/configuraciones",
+    name: "Configuraciones",
+    icon: <SettingsIcon/>,
     hasNestedRoutes: false,
     roles: ["ADMIN"],
   },
