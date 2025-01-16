@@ -7,6 +7,9 @@ import (
 	h "dashboard/helpers"
 	m "dashboard/models"
 	r "dashboard/repositories"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 var roleRepository r.RoleRepository = r.RoleRepository{}
@@ -15,6 +18,7 @@ var userRepository r.UserRepository = r.UserRepository{}
 var JWT_SECRET_KEY = os.Getenv("JWT_SECRET_KEY")
 
 func LoginService(loginRequest LoginRequest) (string, error) {
+
 	user, err := userRepository.GetUserByUsername(loginRequest.Username)
 
 	if err != nil {
@@ -39,10 +43,24 @@ func LoginService(loginRequest LoginRequest) (string, error) {
 		return token, nil
 	}
 
-	return "Failed to login", errors.New("Invalid Credentials")
+	return "Failed to login", errors.New("invalid credentials")
 }
 
-func RegisterService(registerRequest RegisterRequest) (string, error) {
+func RegisterService(registerRequest RegisterRequest, c *gin.Context) (string, error) {
+	claims, exists := c.Get("claims")
+	if !exists {
+		c.Abort()
+		return "Failed to register", errors.New("no claims found")
+	}
+
+	userClaims := claims.(jwt.MapClaims)
+
+	role, ok := userClaims["role"].(string)
+	if !ok || role != "ADMIN" {
+		c.Abort()
+		return "Failed to register", errors.New("insufficient permissions")
+	}
+
 	if _, err := userRepository.GetUserByUsername(registerRequest.Username); err == nil {
 		return "User already exists", err
 	}

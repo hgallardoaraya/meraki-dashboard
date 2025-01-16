@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dashboard/controllers"
+	"dashboard/middlewares"
 )
 
 func RoleRouter(r *gin.RouterGroup) {
@@ -13,8 +14,8 @@ func RoleRouter(r *gin.RouterGroup) {
 	{
 		roleRoutes.GET("/", roleController.GetRoles)
 		roleRoutes.GET("/:id", roleController.GetRoleByID)
-		roleRoutes.POST("/", roleController.CreateRole)
-		roleRoutes.PUT("/:id", roleController.UpdateRole)
-		roleRoutes.DELETE("/:id", roleController.DeleteRole)
+		roleRoutes.POST("/", middlewares.CheckAdminRole(), roleController.CreateRole)
+		roleRoutes.PUT("/:id", middlewares.CheckAdminRole(), roleController.UpdateRole)
+		roleRoutes.DELETE("/:id", middlewares.CheckAdminRole(), roleController.DeleteRole)
 	}
 }

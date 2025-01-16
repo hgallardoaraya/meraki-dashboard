@@ -20,7 +20,7 @@ const useLocale = (): UseLocalReturn => {
       setError(null);             
       await axios.post("http://localhost:8080/api/locales/", newLocale);      
     } catch (error: any) {
-      const message = error.response?.data?.message || "error al crear el local";
+      const message = error.response?.data?.message || "error al crear local";
       setError(message); 
     } finally {
       setLoading(false);       
@@ -33,7 +33,7 @@ const useLocale = (): UseLocalReturn => {
       setError(null);             
       await axios.delete("http://localhost:8080/api/locales/"+id);      
     } catch (error: any) {
-      const message = error.response?.data?.message || "error al eliminar el local";
+      const message = error.response?.data?.message || "error al eliminar local";
       setError(message); 
     } finally {
       setLoading(false);       
@@ -47,7 +47,7 @@ const useLocale = (): UseLocalReturn => {
       console.log("update locale ", locale)      
       await axios.put("http://localhost:8080/api/locales/"+locale.id, locale);      
     } catch (error: any) {
-      const message = error.response?.data?.message || "error al crear el local";
+      const message = error.response?.data?.message || "error al actualizar local";
       setError(message); 
     } finally {
       setLoading(false);       
@@ -56,9 +56,5 @@ const useLocale = (): UseLocalReturn => {
 
   return { createLocale, deleteLocale, updateLocale, loading, error };
 };
-
-function sleep(ms:number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export default useLocale;

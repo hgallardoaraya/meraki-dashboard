@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"dashboard/controllers"
+	"dashboard/middlewares"
 )
 
 func DteRouter(r *gin.RouterGroup) {
@@ -13,8 +14,8 @@ func DteRouter(r *gin.RouterGroup) {
 	{
 		dteRoutes.GET("/", dteController.GetDtes)
 		dteRoutes.GET("/:id", dteController.GetDteByID)
-		dteRoutes.POST("/", dteController.CreateDte)
-		dteRoutes.PUT("/:id", dteController.UpdateDte)
-		dteRoutes.DELETE("/:id", dteController.DeleteDte)
+		dteRoutes.POST("/", middlewares.CheckAdminRole(), dteController.CreateDte)
+		dteRoutes.PUT("/:id", middlewares.CheckAdminRole(), dteController.UpdateDte)
+		dteRoutes.DELETE("/:id", middlewares.CheckAdminRole(), dteController.DeleteDte)
 	}
 }

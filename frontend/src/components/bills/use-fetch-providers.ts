@@ -23,7 +23,7 @@ const useFetchProviders = (): UseFetchProvidersReturn => {
     setError(null);
     try {
       const response = await axios.get<AxiosGetProviders>("http://localhost:8080/api/providers/");      
-      setProviders(response.data.providers);
+      setProviders(response.data.providers || []);
     } catch (err) {
       setError((err as Error).message || "Error al obtener los proveedores");
       setProviders([]);

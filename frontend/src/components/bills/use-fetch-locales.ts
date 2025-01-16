@@ -23,7 +23,7 @@ const useFetchLocales = (): UseFetchLocalesReturn => {
     setError(null);
     try {
       const response = await axios.get<AxiosGetLocales>("http://localhost:8080/api/locales/");      
-      setLocales(response.data.locales);
+      setLocales(response.data.locales || []);
     } catch (err) {
       setError((err as Error).message || "Error al obtener los locales");
       setLocales([])

@@ -41,6 +41,7 @@ const defaultValues = {
 const LocalesMaintainer = () => {
   const columns: ColumnDef<Locale>[] = [
     {
+      accessorKey: "name",
       id: "name",
       header: ({ column }) => (
         <Button
@@ -72,6 +73,7 @@ const LocalesMaintainer = () => {
       enableResizing: false,
     },
     {
+      accessorKey: "address",
       id: "address",
       header: ({ column }) => (
         <Button

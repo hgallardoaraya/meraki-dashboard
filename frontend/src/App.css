@@ -1,0 +1,2 @@
+table.expense-table { table-layout:fixed; }
+table.expense-table td { overflow: hidden; }

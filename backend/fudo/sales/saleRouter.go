@@ -1,4 +1,4 @@
-package fudo
+package sales
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,9 +7,10 @@ import (
 func SaleRouter(r *gin.RouterGroup) {
 	saleController := new(SaleController)
 
-	saleRoutes := r.Group("fudo/sales")
+	saleRoutes := r.Group("/sales")
 	{
 		saleRoutes.GET("/", saleController.GetSales)
-		// saleRoutes.GET("/:id", saleController.GetRoleByID)
+		saleRoutes.GET("/m/:date", saleController.GetSalesByMonth)
+		saleRoutes.GET("/d/:date", saleController.GetSalesByDay)
 	}
 }

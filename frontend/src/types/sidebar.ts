@@ -4,4 +4,5 @@ export interface RouteItem {
   icon?: React.ReactElement,
   hasNestedRoutes: boolean,
   nestedRoutes?: RouteItem[],  
+  roles: string[]
 }

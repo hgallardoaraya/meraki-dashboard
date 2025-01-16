@@ -7,7 +7,8 @@ module.exports = {
   theme: {
   	extend: {
   		width: {
-  			'240px': '240px'
+  			'240px': '240px',
+				'30-rem': '30rem'
   		},
   		transitionProperty: {
   			'width': 'width'

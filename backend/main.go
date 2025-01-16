@@ -1,7 +1,6 @@
 package main
 
 import (
-	middleware "dashboard/middlewares"
 	"fmt"
 	"os"
 
@@ -12,8 +11,9 @@ import (
 
 	auth "dashboard/auth"
 	"dashboard/database"
-	routes "dashboard/routes"
 	fudo "dashboard/fudo"
+	middleware "dashboard/middlewares"
+	routes "dashboard/routes"
 )
 
 func main() {
@@ -49,18 +49,18 @@ func main() {
 		routes.LocaleRouter(api)
 		routes.ProviderRouter(api)
 
-		fudo.SaleRouter(api)
+		fudo.FudoRouter(api)
 
 	}
 
 	ServerPort := os.Getenv("SERVER_PORT")
-	
+
 	if len(ServerPort) == 0 {
-		ServerPort = "8081"
+		ServerPort = "8080"
 	}
 
 	// Start the server
-	
+
 	if err := r.Run(fmt.Sprintf(":%s", ServerPort)); err != nil {
 		fmt.Println("Failed to start server")
 	}

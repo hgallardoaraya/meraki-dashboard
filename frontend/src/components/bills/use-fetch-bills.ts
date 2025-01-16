@@ -30,7 +30,7 @@ const useFetchBills = (): UseFetchBillsReturn => {
           contable_date: new Date(b.contable_date)
         }
       ));
-      setBills(formattedResponse);
+      setBills(formattedResponse || []);
     } catch (err) {
       setError((err as Error).message || "Error al obtener los gastos");
       setBills([])

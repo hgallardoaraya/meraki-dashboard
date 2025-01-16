@@ -25,7 +25,7 @@ func (e *AuthController) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Failed to login",
-			"error":   err.Error(),
+			"error":   "Invalid credentials",
 		})
 		return
 	}
@@ -47,7 +47,7 @@ func (e *AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	token, err := RegisterService(registerRequest)
+	token, err := RegisterService(registerRequest, c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
